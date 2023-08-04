@@ -1,0 +1,15 @@
+{
+  "timeZone": "Etc/GMT-9",
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8",
+  "dependencies": {
+    "libraries": [
+      {
+        "userSymbol": "bbsLib",
+        "version": "0",
+        "libraryId": "1JZ6Jg-pNMRcLPPd6XI-UhyXdsWZRiT2oDLFFvhQIyuxInUPseOnx0REJ",
+        "developmentMode": true
+      }
+    ]
+  }
+}
