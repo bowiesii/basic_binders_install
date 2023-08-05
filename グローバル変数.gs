@@ -12,7 +12,7 @@ const gid_h_simei = "402406560";//h_氏名今日
 const gid_h_wtask = "997759008";//h_週タスク今日
 const gid_h_fcheckPlace = "1413518585";//h_鮮度箇所
 const gid_h_fcheck = "2006815737";//h_鮮度今日
-const gid_sinjinOri = "1420360517";//新人原本
+const gid_sinjinOri = "1420360517";//新人原本（h付くかもしれないが）
 
 
 //基本バインダーログ
