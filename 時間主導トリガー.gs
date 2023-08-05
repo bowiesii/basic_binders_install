@@ -4,7 +4,7 @@ function dailyMorning() {
   //発注警告メール
   var orderM = orderDailyMail();
 
-  //以下は数を報告メール
+  //以下はログ数を報告メール
   var simeiS = simeiLogDaily();
   var wtaskS = wtaskLogDaily();
   var fcheckS = fcheckLogDaily();
