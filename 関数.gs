@@ -2,7 +2,7 @@
 function shareingOrNot(email) {
 
   //共有リストスシート
-  var sheet = SpreadsheetApp.openById('1TZ8pjp3Tc6M0BvoshszIGudfAIL4IBdmp4OUSMZGSHg').getSheetByName('シート1');
+  var sheet = SpreadsheetApp.openById('1TZ8pjp3Tc6M0BvoshszIGudfAIL4IBdmp4OUSMZGSHg').getSheetByName("登録している人");
 
   var ary = sheet.getRange(3, 3, sheet.getLastRow() - 2, 1).getValues();
   for (let row = 0; row <= ary.length - 1; row++) {
