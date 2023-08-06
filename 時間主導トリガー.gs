@@ -8,13 +8,14 @@ function dailyMorning() {
   var simeiS = simeiLogDaily();
   var wtaskS = wtaskLogDaily();
   var fcheckS = fcheckLogDaily();
+  var sinjinS = sinjinLogDaily()
   var editS = editCountDaily();
 
-  var address = "youseimale@gmail.com";//宛先
   var subject = "前日の統計情報"; //件名
   var body = "前日の統計情報です。";
   body = body + "\n氏名ログ数：" + simeiS;
   body = body + "\n週タスクログ数：" + wtaskS;
+  body = body + "\n新人教育ログ数：" + sinjinS;
   body = body + "\n鮮度チェックログ数：" + fcheckS;
   body = body + "\n総編集ログ数（管理者以外）：" + editS;
   if (orderM == "m") {
@@ -23,6 +24,8 @@ function dailyMorning() {
     body = body + "\n発注は終わっています。";
   }
   body = body + "\n※このメールは自動配信です。";
+
+  var address = "youseimale@gmail.com";//宛先
 
   MailApp.sendEmail(address, subject, body);
 

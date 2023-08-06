@@ -33,7 +33,7 @@ function newSinjin(e) {
     return;
   }
 
-  var sheetOri = bbsLib.getSheetBySperadGid(bbSpreadSheet, gid_sinjinOri);//原本
+  var sheetOri = bbsLib.getSheetByIdGid(id_sinjinOri, gid_sinjinOri);//原本
   var sheetLog = bbsLib.getSheetByIdGid(id_bbLog, gid_sinjinList);//新人リスト
 
   //長期経過新人シート→削除と移動・ログ記録
@@ -52,14 +52,14 @@ function newSinjin(e) {
           if (dd >= 30) {//最終更新から30日以上経過→削除と移動・ログ記録
 
             Logger.log(sheetS[na].getSheetName() + " " + gid + " 移動と削除とログ記録");
-            var newfilename = sheetS[na].getSheetName() + "(" + sheetS[na].getRange(3, 4).getDisplayValue() + "最終更新)";
+            var newfilename = sheetS[na].getSheetName() + "（" + sheetS[na].getRange(3, 4).getDisplayValue() + "最終更新）";
             //移動
             copyToNewSpreadsheet(sheetS[na], "12QZoEbx8TU6LpHUnZEaykx4Y__MWEOMG", newfilename);
             //シート削除
             bbSpreadSheet.deleteSheet(sheetS[na]);
             //ログ記録
-            sheetLog.getRange(nb + 2, 4).setValue("削除・移動済み");//GID削除
-            sheetLog.getRange(nb + 2, 5).setValue(today_ymddhm);
+            sheetLog.getRange(nb + 2, 4).setValue("削除・移動済み");//GID情報削除
+            sheetLog.getRange(nb + 2, 5).setValue(today_ymddhm);//削除日時
 
           } else {
             Logger.log(sheetS[na].getSheetName() + " " + gid + " 新人シートだが残す");
@@ -71,15 +71,17 @@ function newSinjin(e) {
   }
 
 
-  //シートコピー・ログ記録
+  //シートコピー・ログ記録・保護
   Logger.log("コピー段階");
   var newSheet = sheetOri.copyTo(bbSpreadSheet);//コピー
-  newSheet.setName(newSheetName);
+  newSheet.setName(newSheetName);//シート名など設定
   newSheet.getRange(2, 2).setValue(sinjinN);
   newSheet.getRange(3, 2).setValue(today_ymd);
   newSheet.getRange(3, 4).setValue(today_ymd);
+
   var logary = [today_ymddhm, sinjinN, email, newSheet.getSheetId(), ""];
   bbsLib.addLogFirst(sheetLog, 2, [logary], 5, 10000);
+
   protectExceptGray(newSheet);//シートを保護、灰色セル以外は編集可
 
 }

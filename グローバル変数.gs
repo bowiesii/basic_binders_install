@@ -12,7 +12,11 @@ const gid_h_simei = "402406560";//h_氏名今日
 const gid_h_wtask = "997759008";//h_週タスク今日
 const gid_h_fcheckPlace = "1413518585";//h_鮮度箇所
 const gid_h_fcheck = "2006815737";//h_鮮度今日
-const gid_sinjinOri = "1420360517";//新人原本（h付くかもしれないが）
+const gid_h_sinjin = "247760006";//h_新人
+
+//新人原本
+const id_sinjinOri = "10Lo84sEyGnuYzhYuJhlfodEMmJM-lpPJU_tTnj7AD9o"
+const gid_sinjinOri = "865253827";
 
 
 //基本バインダーログ
@@ -26,6 +30,7 @@ const gid_orderDay = "838294828";//発注日ごと
 const gid_editDay = "1153461632";//編集数日ごと
 const gid_editDaySum = "588078675";//編集数日ごと統計
 const gid_sinjinList = "689879716";//新人リスト
+const gid_sinjinDay = "239524908";//新人日ごと
 
 //本日日付定義
 //const today = new Date("2023/8/7");

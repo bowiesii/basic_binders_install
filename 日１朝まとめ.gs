@@ -10,6 +10,18 @@ function simeiLogDaily() {
 
 }
 
+//新人ログ移動（日１、朝）
+function sinjinLogDaily() {
+
+  const sheetTempLog = bbsLib.getSheetByIdGid(id_bb, gid_h_sinjin);
+  var sum = sheetTempLog.getLastRow() - 1;
+  const sheetLog = bbsLib.getSheetByIdGid(id_bbLog, gid_sinjinDay);
+  bbsLib.replaceLogFirst(sheetTempLog, sheetLog);//ログ移動
+
+  return sum;
+
+}
+
 //週タスクログ移動（日１、朝）
 function wtaskLogDaily() {
 
