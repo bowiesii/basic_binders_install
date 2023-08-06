@@ -18,7 +18,6 @@ const gid_h_sinjin = "247760006";//h_新人
 const id_sinjinOri = "10Lo84sEyGnuYzhYuJhlfodEMmJM-lpPJU_tTnj7AD9o"
 const gid_sinjinOri = "865253827";
 
-
 //基本バインダーログ
 const id_bbLog = "17bZ83U_NeHXLT__NOV0zfHd2B8XZIBEgKfd_akNZDuY";
 const gid_simei = "1508872407";//氏名日ごと
