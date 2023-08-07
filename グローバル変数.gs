@@ -9,8 +9,9 @@ const gid_wtask3 = "1024816661";//週タスク３
 const gid_fcheck = "1405667253";//鮮度
 const gid_h_edit = "1020343545";//h_編集数一時
 const gid_h_simei = "402406560";//h_氏名今日
+const gid_h_simeiNow = "2071040886";//h_氏名現在
 const gid_h_wtask = "997759008";//h_週タスク今日
-const gid_h_fcheckPlace = "1413518585";//h_鮮度箇所
+const gid_h_place = "1413518585";//h_地図箇所
 const gid_h_fcheck = "2006815737";//h_鮮度今日
 const gid_h_sinjin = "247760006";//h_新人
 
@@ -27,9 +28,15 @@ const gid_fcheckDay = "547488950";//鮮度日ごと
 const gid_fcheckDaySum = "1585149555";//鮮度日ごと統計
 const gid_orderDay = "838294828";//発注日ごと
 const gid_editDay = "1153461632";//編集数日ごと
-const gid_editDaySum = "588078675";//編集数日ごと統計
+const gid_useSumDay = "733648789";//使用統計数日ごと
 const gid_sinjinList = "689879716";//新人リスト
 const gid_sinjinDay = "239524908";//新人日ごと
+const gid_botTemp = "947575838";//bot一時★これだけ一時ログもログシートにある
+const gid_botDay = "1119293774";//bot
+
+//ファイル共有リスト
+const shareSpreadSheet = SpreadsheetApp.openById("1TZ8pjp3Tc6M0BvoshszIGudfAIL4IBdmp4OUSMZGSHg");
+const shareSheet = shareSpreadSheet.getSheetByName("登録している人");
 
 //本日日付定義
 //const today = new Date("2023/8/7");

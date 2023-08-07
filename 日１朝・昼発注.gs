@@ -78,12 +78,12 @@ function orderDailyMail() {
 
   if (mail == 1) {
     Logger.log("メールする");
-    mail_order("d-slr-wct-wdf@mineo.jp");
-    return "m";
+    mail_order("youseimale@gmail.com");
   } else {
     Logger.log("メールしない");
-    return "";
   }
+
+  return mail;//メールしたなら１、しないなら０
 
 }
 

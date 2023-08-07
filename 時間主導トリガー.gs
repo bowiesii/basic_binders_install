@@ -1,33 +1,52 @@
 //日１早朝
 function dailyMorning() {
 
+  //使用統計ログ
+  const sheetLog = bbsLib.getSheetByIdGid(id_bbLog, gid_useSumDay);
+
   //発注警告メール
   var orderM = orderDailyMail();
 
-  //以下はログ数を報告メール
+  //実行しログ数把握
   var simeiS = simeiLogDaily();
   var wtaskS = wtaskLogDaily();
   var fcheckS = fcheckLogDaily();
-  var sinjinS = sinjinLogDaily()
+  var sinjinS = sinjinLogDaily();
   var editS = editCountDaily();
+  var botS = botLogDaily();
 
-  var subject = "前日の統計情報"; //件名
-  var body = "前日の統計情報です。";
+  //共有登録者数
+  var shareS = shareSheet.getLastRow() - 2;
+  var shareS_p = shareS - sheetLog.getRange(2, 2).getDisplayValue();
+
+  //ユーザープロパティ（氏名）数
+  var userpropS = bbsLib.getSheetByIdGid(id_bb, gid_h_simeiNow).getLastRow() - 1;
+  var userpropS_p = userpropS - sheetLog.getRange(2, 3).getDisplayValue();
+
+  var logary = [today_ymddhm, shareS, userpropS, editS, simeiS, botS, orderM, wtaskS, sinjinS, fcheckS];
+  bbsLib.addLogFirst(sheetLog, 2, [logary], 10, 10000);
+
+  //統計報告メール
+  var subject = "笠間店の統計情報"; //件名
+  var body = "〇現在の統計情報";
+  body = body + "\n共有登録者数：" + shareS + "（前日比" + shareS_p + "）";
+  body = body + "\n氏名数（推定）：" + userpropS + "（前日比" + userpropS_p + "）";
+  body = body + "\n";
+  body = body + "\n〇前日の統計情報";
   body = body + "\n氏名ログ数：" + simeiS;
   body = body + "\n週タスクログ数：" + wtaskS;
   body = body + "\n新人教育ログ数：" + sinjinS;
   body = body + "\n鮮度チェックログ数：" + fcheckS;
   body = body + "\n総編集ログ数（管理者以外）：" + editS;
-  if (orderM == "m") {
-    body = body + "\n発注一部未報告のためメール発信しました。";
+  body = body + "\n" + "bot受信回数：" + botS;
+  if (orderM == 1) {
+    body = body + "\n\n★発注一部未報告のためメール発信しました。";
   } else {
-    body = body + "\n発注は終わっています。";
+    body = body + "\n\n発注は終わっています。";
   }
-  body = body + "\n※このメールは自動配信です。";
+  body = body + "\n\n※このメールは自動配信です。";
 
-  var address = "youseimale@gmail.com";//宛先
-
-  MailApp.sendEmail(address, subject, body);
+  MailApp.sendEmail("youseimale@gmail.com", subject, body);
 
 }
 

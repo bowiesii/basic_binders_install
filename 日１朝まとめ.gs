@@ -1,3 +1,15 @@
+//botログ移動（日１、朝）
+function botLogDaily() {
+
+  const sheetTempLog = bbsLib.getSheetByIdGid(id_bbLog, gid_botTemp);
+  var sum = sheetTempLog.getLastRow() - 1;
+  const sheetLog = bbsLib.getSheetByIdGid(id_bbLog, gid_botDay);
+  bbsLib.replaceLogFirst(sheetTempLog, sheetLog);//ログ移動
+
+  return sum;
+
+}
+
 //氏名ログ移動（日１、朝）
 function simeiLogDaily() {
 
@@ -40,11 +52,7 @@ function editCountDaily() {
   const sheetTempLog = bbsLib.getSheetByIdGid(id_bb, gid_h_edit);
   var sum = sheetTempLog.getLastRow() - 1;
   const sheetLog = bbsLib.getSheetByIdGid(id_bbLog, gid_editDay);
-  const sheetLogSum = bbsLib.getSheetByIdGid(id_bbLog, gid_editDaySum);
   bbsLib.replaceLogFirst(sheetTempLog, sheetLog);//ログ移動
-
-  var logary = [today_ymddhm, sum];
-  bbsLib.addLogFirst(sheetLogSum, 2, [logary], 2, 10000);//統計追加
 
   return sum;
 
