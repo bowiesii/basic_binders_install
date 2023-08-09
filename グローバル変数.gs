@@ -48,6 +48,7 @@ const todayDate = today.getDate();
 const wary = ["日", "月", "火", "水", "木", "金", "土"];
 const today_wjpn = wary[today.getDay()];
 const today_ymd = Utilities.formatDate(today, 'JST', 'yyyy/MM/dd');
+const today_md = Utilities.formatDate(today, 'JST', 'MM/dd');
 const today_ymdd = today_ymd + " " + today_wjpn;
 const today_hm = Utilities.formatDate(today, 'JST', 'HH:mm');
 const today_ymddhm = today_ymdd + " " + today_hm;
