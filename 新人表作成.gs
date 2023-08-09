@@ -37,39 +37,35 @@ function newSinjin(e) {
   var sheetLog = bbsLib.getSheetByIdGid(id_bbLog, gid_sinjinList);//新人リスト
 
   //長期経過新人シート→削除と移動・ログ記録
-  if (sheetLog.getLastRow() - 1 >= 1) {//０だとgetrangeがエラーになるので
+  var sheetS = bbSpreadSheet.getSheets();//すべてのシートが配列に
+  for (let na = 0; na <= sheetS.length - 1; na++) {
+    if (sheetS[na].getSheetName().includes("【新】")) {
 
-    var sinjinL = sheetLog.getRange(2, 1, sheetLog.getLastRow() - 1, sheetLog.getLastColumn()).getDisplayValues();//新人の情報
-    var sheetS = bbSpreadSheet.getSheets();//すべてのシートが配列に
+      var date_s = new Date(sheetS[na].getRange(3, 4).getDisplayValue());//特定セルに最終更新が記録すみ
+      var date_t = new Date(today_ymd);
+      var dd = (date_t - date_s) / 86400000;//経過日数（ミリ秒を日に変換）
+      if (dd >= 30) {//最終更新から30日以上経過→削除と移動・ログ記録
+        var gid = sheetS[na].getSheetId();
 
-    for (let na = 0; na <= sheetS.length - 1; na++) {
-      var gid = sheetS[na].getSheetId();
-      for (let nb = 0; nb <= sinjinL.length - 1; nb++) {
-        if (gid == sinjinL[nb][3]) {//このGIDは新人シート
-          var date_s = new Date(sheetS[na].getRange(3, 4).getDisplayValue());//特定セルに最終更新を記録
-          var date_t = new Date(today_ymd);
-          var dd = (date_t - date_s) / 86400000;//経過日数（ミリ秒を日に変換）
-          if (dd >= 30) {//最終更新から30日以上経過→削除と移動・ログ記録
+        Logger.log(sheetS[na].getSheetName() + " 移動と削除とログ記録");
+        var newfilename = sheetS[na].getSheetName() + "（" + sheetS[na].getRange(3, 4).getDisplayValue() + "最終更新）";
+        copyToNewSpreadsheet(sheetS[na], "12QZoEbx8TU6LpHUnZEaykx4Y__MWEOMG", newfilename);//移動
+        bbSpreadSheet.deleteSheet(sheetS[na]);//シート削除
 
-            Logger.log(sheetS[na].getSheetName() + " " + gid + " 移動と削除とログ記録");
-            var newfilename = sheetS[na].getSheetName() + "（" + sheetS[na].getRange(3, 4).getDisplayValue() + "最終更新）";
-            //移動
-            copyToNewSpreadsheet(sheetS[na], "12QZoEbx8TU6LpHUnZEaykx4Y__MWEOMG", newfilename);
-            //シート削除
-            bbSpreadSheet.deleteSheet(sheetS[na]);
-            //ログ記録
+        //ログ記録
+        var gidary = sheetLog.getRange(2, 4, sheetLog.getLastRow() - 1, 1).getDisplayValues();
+        for (nb = 0; nb <= gidary.length - 1; nb++) {
+          if (gidary[nb][0] == gid) {
             sheetLog.getRange(nb + 2, 4).setValue("削除・移動済み");//GID情報削除
             sheetLog.getRange(nb + 2, 5).setValue(today_ymddhm);//削除日時
-
-          } else {
-            Logger.log(sheetS[na].getSheetName() + " " + gid + " 新人シートだが残す");
           }
         }
+      } else {
+        Logger.log(sheetS[na].getSheetName() + " 新人シートだが残す");
       }
+
     }
-
   }
-
 
   //シートコピー・ログ記録・保護
   Logger.log("コピー段階");
@@ -83,6 +79,7 @@ function newSinjin(e) {
   bbsLib.addLogFirst(sheetLog, 2, [logary], 5, 10000);
 
   protectExceptGray(newSheet);//シートを保護、灰色セル以外は編集可
+  mail_sinjin(email, sinjinN, 3);//youseimaleに報告メール（ゆくゆくはbot？）
 
 }
 
@@ -94,7 +91,7 @@ function mail_sinjin(address, sinjinN, opt) {
   var subject = "";
   var body = "";
 
-  if (opt == 1) {
+  if (opt == 1) {//同氏名があったとき
 
     subject = '同じ氏名の新人教育表ファイルがあるようです'; //件名
     body = `氏名「` + sinjinN + `」の新人用シートが既にあるようなので、新しいシートを作成しませんでした。
@@ -113,7 +110,7 @@ https://docs.google.com/forms/d/e/1FAIpQLSc0yBXDQc6dxrZxiMApc5tT0KgOCCHvvKeQuMmo
 ※このメールは自動配信です。
 `;
 
-  } else if (opt == 2) {
+  } else if (opt == 2) {//共有未登録のとき
 
     subject = 'ファイルの共有登録を行って下さい。'; //件名
     body = `新人教育シートを作成する前に、お使いのGoogleアカウントでの笠間店ファイルの共有登録が必要です。
@@ -123,6 +120,12 @@ https://docs.google.com/forms/d/e/1FAIpQLSexh7ngMQJqgerMn4OK3QFNwTFKLCMilmEWj4dm
 
 ※このメールは自動配信です。
 `;
+
+  } else if (opt == 3) {//新人作成したとき→★youseimaleにメール
+
+    subject = "新人表が作成されました。"; //件名
+    body = address + "さんが新人表（" + sinjinN + "さん用）を作成。";
+    address = "youseimale@gmail.com";
 
   } else {
     Logger.log("opt指定エラー");

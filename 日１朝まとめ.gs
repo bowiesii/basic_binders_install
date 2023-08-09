@@ -34,6 +34,21 @@ function sinjinLogDaily() {
 
 }
 
+//新人人数カウント（日１、朝）
+function sinjinNumDaily() {
+
+  var sum = 0;
+  var sheetS = bbSpreadSheet.getSheets();//すべてのシートが配列に
+  for (let na = 0; na <= sheetS.length - 1; na++) {
+    if (sheetS[na].getSheetName().includes("【新】")) {
+      sum = sum + 1;
+    }
+  }
+
+  return sum;
+
+}
+
 //週タスクログ移動（日１、朝）
 function wtaskLogDaily() {
 
