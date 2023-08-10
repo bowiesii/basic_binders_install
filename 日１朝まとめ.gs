@@ -1,15 +1,3 @@
-//botログ移動（日１、朝）
-function botLogDaily() {
-
-  const sheetTempLog = bbsLib.getSheetByIdGid(id_bbLog, gid_botTemp);
-  var sum = sheetTempLog.getLastRow() - 1;
-  const sheetLog = bbsLib.getSheetByIdGid(id_bbLog, gid_botDay);
-  bbsLib.replaceLogFirst(sheetTempLog, sheetLog);//ログ移動
-
-  return sum;
-
-}
-
 //氏名ログ移動（日１、朝）
 function simeiLogDaily() {
 
@@ -19,19 +7,50 @@ function simeiLogDaily() {
   bbsLib.replaceLogFirst(sheetTempLog, sheetLog);//ログ移動
 
   return sum;
-
 }
 
-//新人ログ移動（日１、朝）
-function sinjinLogDaily() {
+//botログ移動（日１、朝）※これだけ一時はログスプシ。
+function botLogDaily() {
 
-  const sheetTempLog = bbsLib.getSheetByIdGid(id_bb, gid_h_sinjin);
+  const sheetTempLog = bbsLib.getSheetByIdGid(id_bbLog, gid_botTemp);
   var sum = sheetTempLog.getLastRow() - 1;
-  const sheetLog = bbsLib.getSheetByIdGid(id_bbLog, gid_sinjinDay);
+  const sheetLog = bbsLib.getSheetByIdGid(id_bbLog, gid_botDay);
   bbsLib.replaceLogFirst(sheetTempLog, sheetLog);//ログ移動
 
   return sum;
+}
 
+//統合ログ移動（日１、朝）
+function intLogDaily() {
+
+  const sheetTempLog = bbsLib.getSheetByIdGid(id_bb, gid_h_log);
+  var allS = sheetTempLog.getLastRow() - 1;
+
+  //発注、週タスク、新人、鮮度のログ数
+  var orderS = 0;
+  var wtaskS = 0;
+  var sinjinS = 0;
+  var freshS = 0;
+
+  if (allS != 0) {//getvaluesのエラー防止
+    var snAry = sheetTempLog.getRange(2, 3, allS, 1).getValues();
+    for (let row = 0; row <= snAry.length - 1; row++) {
+      if (snAry[row][0].includes("【新】")) {//自由にシート名つけられえるのでこれが最初
+        sinjinS++;
+      } else if (snAry[row][0] == "発注") {
+        orderS++;
+      } else if (snAry[row][0] == "鮮度") {
+        freshS++;
+      } else if (snAry[row][0].includes("週バ")) {
+        wtaskS++;
+      }
+    }
+  }
+
+  const sheetLog = bbsLib.getSheetByIdGid(id_bbLog, gid_intLog);
+  bbsLib.replaceLogFirst(sheetTempLog, sheetLog);//ログ移動
+
+  return { allS, orderS, wtaskS, sinjinS, freshS };
 }
 
 //新人人数カウント（日１、朝）
@@ -46,29 +65,4 @@ function sinjinNumDaily() {
   }
 
   return sum;
-
-}
-
-//週タスクログ移動（日１、朝）
-function wtaskLogDaily() {
-
-  const sheetTempLog = bbsLib.getSheetByIdGid(id_bb, gid_h_wtask);
-  var sum = sheetTempLog.getLastRow() - 1;
-  const sheetLog = bbsLib.getSheetByIdGid(id_bbLog, gid_wtaskDay);
-  bbsLib.replaceLogFirst(sheetTempLog, sheetLog);//ログ移動
-
-  return sum;
-
-}
-
-//編集数ログ移動と統計追加（日１、朝）
-function editCountDaily() {
-
-  const sheetTempLog = bbsLib.getSheetByIdGid(id_bb, gid_h_edit);
-  var sum = sheetTempLog.getLastRow() - 1;
-  const sheetLog = bbsLib.getSheetByIdGid(id_bbLog, gid_editDay);
-  bbsLib.replaceLogFirst(sheetTempLog, sheetLog);//ログ移動
-
-  return sum;
-
 }

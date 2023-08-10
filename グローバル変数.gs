@@ -7,13 +7,11 @@ const gid_wtask1 = "1616634719";//週タスク１のGID
 const gid_wtask2 = "2097376321";//週タスク２
 const gid_wtask3 = "1024816661";//週タスク３
 const gid_fcheck = "1405667253";//鮮度
-const gid_h_edit = "1020343545";//h_編集数一時
+
 const gid_h_simei = "402406560";//h_氏名今日
 const gid_h_simeiNow = "2071040886";//h_氏名現在
-const gid_h_wtask = "997759008";//h_週タスク今日
+const gid_h_log = "1568642280";//h_統合ログ（管理者以外）一時
 const gid_h_place = "1413518585";//h_地図箇所
-const gid_h_fcheck = "2006815737";//h_鮮度今日
-const gid_h_sinjin = "247760006";//h_新人
 
 //新人原本
 const id_sinjinOri = "10Lo84sEyGnuYzhYuJhlfodEMmJM-lpPJU_tTnj7AD9o"
@@ -22,17 +20,14 @@ const gid_sinjinOri = "865253827";
 //基本バインダーログ
 const id_bbLog = "17bZ83U_NeHXLT__NOV0zfHd2B8XZIBEgKfd_akNZDuY";
 const gid_simei = "1508872407";//氏名日ごと
-const gid_wtaskDay = "1990699055";//週タスク日ごと
 const gid_wtaskWeek = "0";//週タスク週ごと
-const gid_fcheckDay = "547488950";//鮮度日ごと
 const gid_fcheckDaySum = "1585149555";//鮮度日ごと統計
 const gid_orderDay = "838294828";//発注日ごと
-const gid_editDay = "1153461632";//編集数日ごと
 const gid_useSumDay = "733648789";//使用統計数日ごと
 const gid_sinjinList = "689879716";//新人リスト
-const gid_sinjinDay = "239524908";//新人日ごと
 const gid_botTemp = "947575838";//bot一時★これだけ一時ログもログシートにある
 const gid_botDay = "1119293774";//bot
+const gid_intLog = "392913159";//統合ログ
 
 //ファイル共有リスト
 const shareSpreadSheet = SpreadsheetApp.openById("1TZ8pjp3Tc6M0BvoshszIGudfAIL4IBdmp4OUSMZGSHg");

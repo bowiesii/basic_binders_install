@@ -1,13 +1,9 @@
-//鮮度ログ移動（日１、朝）、色付け
+//鮮度色付け（日１、朝）、色統計（※実行ログは統合ログを見よ）
 function fcheckLogDaily() {
 
   const sheet = bbsLib.getSheetByIdGid(id_bb, gid_fcheck);
-  const sheetTempLog = bbsLib.getSheetByIdGid(id_bb, gid_h_fcheck);//一時ログ
-  const sheetLog = bbsLib.getSheetByIdGid(id_bbLog, gid_fcheckDay);//ログ
   const sheetSum = bbsLib.getSheetByIdGid(id_bbLog, gid_fcheckDaySum);//日ごと統計
-
-  var didnum = sheetTempLog.getLastRow() - 1;//ログの数
-  bbsLib.replaceLogFirst(sheetTempLog, sheetLog);//ログ移動
+  var r_red_p = sheetSum.getRange(2, 8).getValue();//前回の赤割合
 
   //本体ファイル色付けの更新
   var maxrow = sheet.getLastRow();
@@ -61,9 +57,11 @@ function fcheckLogDaily() {
   var r_white = Math.round((n_white / n_all) * 100);
   var r_pink = Math.round((n_pink / n_all) * 100);
   var r_red = Math.round((n_red / n_all) * 100);
-  var sumary = [today_ymddhm, didnum, n_all, n_white, r_white, n_pink, r_pink, n_red, r_red];
-  bbsLib.addLogFirst(sheetSum, 2, [sumary], 9, 10000);
+  var sumary = [today_ymddhm, n_all, n_white, r_white, n_pink, r_pink, n_red, r_red];
+  bbsLib.addLogFirst(sheetSum, 2, [sumary], 8, 10000);
 
-  return didnum;
+  r_red_p = r_red - r_red_p;
+  //赤割合、前回比を返す
+  return { r_red, r_red_p };
 
 }

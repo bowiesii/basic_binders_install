@@ -1,5 +1,5 @@
 //発注ログ（日１、昼）
-function orderDaily() {
+function orderDailyNoon() {
 
   //発注確認表
   const sheet1 = bbsLib.getSheetByIdGid(id_bb, gid_order);
@@ -58,7 +58,7 @@ function orderDaily() {
 }
 
 //発注メール（日１、朝）
-function orderDailyMail() {
+function orderDailyMorning() {
 
   //発注確認表
   const sheet = bbsLib.getSheetByIdGid(id_bb, gid_order);
@@ -91,7 +91,7 @@ function mail_order(address) {
   const subject = '本日朝締め発注が終わっていない可能性'; //件名
   let body = `本日朝締めの発注の一部または全部が未報告であり、終わっていない可能性があります。
 確認して下さい。
-https://docs.google.com/spreadsheets/d/1sEKCFs6oNzbEkRgt2Z2aq_4mOGQXMU7dcFTXPNYf-wg/edit#gid=648587868?openExternalBrowser=1
+https://docs.google.com/spreadsheets/d/1sEKCFs6oNzbEkRgt2Z2aq_4mOGQXMU7dcFTXPNYf-wg/edit#gid=648587868
 ※このメールは自動配信です。
 `;
   MailApp.sendEmail(address, subject, body);

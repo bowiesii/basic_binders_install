@@ -11,7 +11,7 @@ function newSinjin(e) {
   var answer = e.response.getItemResponses();
   var sinjinN = answer[0].getResponse();
   var email = e.response.getRespondentEmail();
-  Logger.log(sinjinN + " " + email);
+  Logger.log("new " + sinjinN + " " + email);
   var newSheetName = "【新】" + sinjinN;
 
   if (sinjinN.length <= 1 || sinjinN.length >= 9) {
@@ -48,16 +48,17 @@ function newSinjin(e) {
         var gid = sheetS[na].getSheetId();
 
         Logger.log(sheetS[na].getSheetName() + " 移動と削除とログ記録");
-        var newfilename = sheetS[na].getSheetName() + "（" + sheetS[na].getRange(3, 4).getDisplayValue() + "最終更新）";
+        var newfilename = sheetS[na].getSheetName() + "（" + sheetS[na].getRange(3, 4).getDisplayValue() + "最終更新、自動削除）";
         copyToNewSpreadsheet(sheetS[na], "12QZoEbx8TU6LpHUnZEaykx4Y__MWEOMG", newfilename);//移動
         bbSpreadSheet.deleteSheet(sheetS[na]);//シート削除
 
-        //ログ記録
+        //削除をログ記録
         var gidary = sheetLog.getRange(2, 4, sheetLog.getLastRow() - 1, 1).getDisplayValues();
         for (nb = 0; nb <= gidary.length - 1; nb++) {
           if (gidary[nb][0] == gid) {
             sheetLog.getRange(nb + 2, 4).setValue("削除・移動済み");//GID情報削除
             sheetLog.getRange(nb + 2, 5).setValue(today_ymddhm);//削除日時
+            sheetLog.getRange(nb + 2, 6).setValue("自動");//表削除者
           }
         }
       } else {
@@ -67,13 +68,14 @@ function newSinjin(e) {
     }
   }
 
-  //シートコピー・ログ記録・保護
+  //シートコピー・追加をログ記録・保護
   Logger.log("コピー段階");
   var newSheet = sheetOri.copyTo(bbSpreadSheet);//コピー
   newSheet.setName(newSheetName);//シート名など設定
-  newSheet.getRange(2, 2).setValue(sinjinN);
-  newSheet.getRange(3, 2).setValue(today_ymd);
-  newSheet.getRange(3, 4).setValue(today_ymd);
+  newSheet.getRange(2, 2).setValue(sinjinN);//新人氏名
+  newSheet.getRange(3, 2).setValue(today_ymd);//作成日
+  newSheet.getRange(3, 4).setValue(today_ymd);//最終更新
+  newSheet.getRange(4, 4).setValue(newSheet.getSheetId());//GID
 
   var logary = [today_ymddhm, sinjinN, email, newSheet.getSheetId(), ""];
   bbsLib.addLogFirst(sheetLog, 2, [logary], 5, 10000);
@@ -86,6 +88,9 @@ function newSinjin(e) {
 
 //opt1=シート名重複
 //opt2=共有登録なし
+//opt3=新人作成したとき→★youseimaleにメール
+//opt4=新人削除しようとしたがシート名が見つからない
+//opt5=新人削除したとき→★youseimaleにメール
 function mail_sinjin(address, sinjinN, opt) {
 
   var subject = "";
@@ -93,7 +98,7 @@ function mail_sinjin(address, sinjinN, opt) {
 
   if (opt == 1) {//同氏名があったとき
 
-    subject = '同じ氏名の新人教育表ファイルがあるようです'; //件名
+    subject = '同じ氏名の新人教育表シートが既にがあるようです'; //件名
     body = `氏名「` + sinjinN + `」の新人用シートが既にあるようなので、新しいシートを作成しませんでした。
 
 １，既にほかの誰かがシートを作成済み、もしくは
@@ -113,7 +118,7 @@ https://docs.google.com/forms/d/e/1FAIpQLSc0yBXDQc6dxrZxiMApc5tT0KgOCCHvvKeQuMmo
   } else if (opt == 2) {//共有未登録のとき
 
     subject = 'ファイルの共有登録を行って下さい。'; //件名
-    body = `新人教育シートを作成する前に、お使いのGoogleアカウントでの笠間店ファイルの共有登録が必要です。
+    body = `新人教育シートを作成or削除する前に、お使いのGoogleアカウントでの笠間店ファイルの共有登録が必要です。
 
 共有登録は以下から。
 https://docs.google.com/forms/d/e/1FAIpQLSexh7ngMQJqgerMn4OK3QFNwTFKLCMilmEWj4dmp1MS7vwi5Q/viewform
@@ -125,6 +130,25 @@ https://docs.google.com/forms/d/e/1FAIpQLSexh7ngMQJqgerMn4OK3QFNwTFKLCMilmEWj4dm
 
     subject = "新人表が作成されました。"; //件名
     body = address + "さんが新人表（" + sinjinN + "さん用）を作成。";
+    address = "youseimale@gmail.com";
+
+  } else if (opt == 4) {//新人削除しようとしたがシート名が見つからない
+
+    subject = '入力された名称のシートは無いようです。'; //件名
+    body = `シート名「` + sinjinN + `」の新人用シートは無いようです。
+以下のファイルを見て、シート名が正しいか確認して下さい。
+https://docs.google.com/spreadsheets/d/1sEKCFs6oNzbEkRgt2Z2aq_4mOGQXMU7dcFTXPNYf-wg/edit
+
+新人教育表削除フォーム
+https://docs.google.com/forms/d/e/1FAIpQLSe04FTp2UNkWXTZdRXgjNb-BPGxMm6l35SfvYyiBFifqmyIzw/viewform
+
+※このメールは自動配信です。
+`;
+
+  } else if (opt == 5) {//新人削除したとき→★youseimaleにメール
+
+    subject = "新人表が手動削除されました。"; //件名
+    body = address + "さんが新人表（" + sinjinN + "）を手動削除。";
     address = "youseimale@gmail.com";
 
   } else {
