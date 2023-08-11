@@ -28,9 +28,13 @@ function dailyMorning() {
   var sinjinNum = sinjinNumDaily();
   var sinjinNum_p = sinjinNum - sheetLog.getRange(2, 4).getDisplayValue();//前回からの変化
 
+  //botフォロワー数-ブロック数
+  var botUserS = botUserNumDaily();
+  var botUserS_p = botUserS - sheetLog.getRange(2, 5).getDisplayValue();//前回からの変化
+
   //使用統計ログ書き込み
-  var logary = [today_ymddhm, shareS, userpropS, sinjinNum, simeiS, botS, orderM, allS, orderS, wtaskS, sinjinS, freshS];
-  bbsLib.addLogFirst(sheetLog, 2, [logary], 12, 10000);
+  var logary = [today_ymddhm, shareS, userpropS, sinjinNum, botUserS, simeiS, botS, orderM, allS, orderS, wtaskS, sinjinS, freshS];
+  bbsLib.addLogFirst(sheetLog, 2, [logary], 13, 10000);
 
   //統計報告メール
   var subject = "笠間店統計情報"; //件名
@@ -44,6 +48,7 @@ function dailyMorning() {
   body = body + "\n共有登録者数：" + shareS + "（前回比" + shareS_p + "）";
   body = body + "\n氏名数（推定）：" + userpropS + "（前回比" + userpropS_p + "）";
   body = body + "\n新人表の数：" + sinjinNum + "（前回比" + sinjinNum_p + "）";
+  body = body + "\n" + "botユーザー数：" + botUserS + "（前回比" + botUserS_p + "）";
   body = body + "\n鮮度表の赤割合：" + r_red + "%（前回比" + r_red_p + "%）";
   body = body + "\n〇前回日報（" + prevTime + "）からの増加ログ";
   body = body + "\n氏名ログ数：" + simeiS;

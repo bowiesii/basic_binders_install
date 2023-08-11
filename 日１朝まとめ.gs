@@ -20,6 +20,31 @@ function botLogDaily() {
   return sum;
 }
 
+/*※認証アカウントでないと使えない。
+//bot登録者リスト更新（日１朝）※その都度全部クリアする
+function botUsersDaily() {
+
+  var ary = botLib.getAllFollowerIdAndName();//既に２次元
+
+  var sum = 0;
+  if(ary == [""]){return;}
+
+  var sum = ary.length;
+  const sheetLog = bbsLib.getSheetByIdGid(id_bbLog, gid_botUser);
+  sheetLog.getRange(2, 1, sheetLog.getLastRow() - 1, 2).clearContent();//まずクリア
+  sheetLog.getRange(2, 1, sum, 2).setValues(ary);
+
+  return sum;
+}
+*/
+
+//botフォロワー-ブロックの数を取得
+function botUserNumDaily() {
+  var { followS, blockS } = botLib.getFBNum();
+  var sum = followS - blockS;
+  return sum;
+}
+
 //統合ログ移動（日１、朝）
 function intLogDaily() {
 

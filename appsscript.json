@@ -9,6 +9,12 @@
         "version": "0",
         "libraryId": "1JZ6Jg-pNMRcLPPd6XI-UhyXdsWZRiT2oDLFFvhQIyuxInUPseOnx0REJ",
         "developmentMode": true
+      },
+      {
+        "userSymbol": "botLib",
+        "version": "0",
+        "libraryId": "1wWjz94jbcC6CVQcygYhReqpy5vp4ECgrWZ5GepwJtvdrgI4yWArKcBii",
+        "developmentMode": true
       }
     ]
   },
@@ -17,6 +23,7 @@
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/forms",
     "https://www.googleapis.com/auth/script.send_mail",
-    "https://www.googleapis.com/auth/script.scriptapp"
+    "https://www.googleapis.com/auth/script.scriptapp",
+    "https://www.googleapis.com/auth/script.external_request"
   ]
 }
