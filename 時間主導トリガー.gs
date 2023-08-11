@@ -36,8 +36,7 @@ function dailyMorning() {
   var logary = [today_ymddhm, shareS, userpropS, sinjinNum, botUserS, simeiS, botS, orderM, allS, orderS, wtaskS, sinjinS, freshS];
   bbsLib.addLogFirst(sheetLog, 2, [logary], 13, 10000);
 
-  //統計報告メール
-  var subject = "笠間店統計情報"; //件名
+  //統計報告通知
   var body = "〇" + today_ymddhm + " 時点集計の日報です。";
   if (orderM == 1) {
     body = body + "\n★" + today_md + " 朝締め発注一部未報告でした。";
@@ -58,12 +57,9 @@ function dailyMorning() {
   body = body + "\n週タスクログ数：" + wtaskS;
   body = body + "\n新人教育ログ数：" + sinjinS;
   body = body + "\n鮮度チェックログ数：" + freshS;
-
   body = body + "\n" + "使用統計（日１朝更新）" + "https://docs.google.com/spreadsheets/d/17bZ83U_NeHXLT__NOV0zfHd2B8XZIBEgKfd_akNZDuY/edit#gid=733648789";
 
-  sheetLog.getRange(1, 1).setNote(subject + "\n" + body);//bot用にメールの内容をとっておく
-
-  MailApp.sendEmail("youseimale@gmail.com", subject, body);
+  mail_summary(body);
 
 }
 

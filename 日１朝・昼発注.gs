@@ -78,7 +78,7 @@ function orderDailyMorning() {
 
   if (mail == 1) {
     Logger.log("メールする");
-    mail_order("youseimale@gmail.com");
+    mail_order();
   } else {
     Logger.log("メールしない");
   }
@@ -87,13 +87,3 @@ function orderDailyMorning() {
 
 }
 
-function mail_order(address) {
-  const subject = '本日朝締め発注が終わっていない可能性'; //件名
-  let body = `本日朝締めの発注の一部または全部が未報告であり、終わっていない可能性があります。
-確認して下さい。
-https://docs.google.com/spreadsheets/d/1sEKCFs6oNzbEkRgt2Z2aq_4mOGQXMU7dcFTXPNYf-wg/edit#gid=648587868
-※このメールは自動配信です。
-`;
-  MailApp.sendEmail(address, subject, body);
-
-}

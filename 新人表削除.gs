@@ -47,14 +47,12 @@ function delSinjin(e) {
         }
       }
 
-      mail_sinjin(email, delSheetName, 5);//youseimaleに報告メール
+      mail_sinjin(email, delSheetName, 5);//報告メール
       return;
     }
   }
 
   mail_sinjin(email, delSheetName, 4);//シートが見つからないとき返信メール
   Logger.log("cannot find sheet");
-
-
 
 }
