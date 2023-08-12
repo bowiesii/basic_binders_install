@@ -69,7 +69,7 @@ function orderDailyMorning() {
   for (let col = 0; col <= tasknum; col++) {
     array[0][col] = array[0][col].replace(/\s/g, "");
   }
-  Logger.log(array);
+  Logger.log("本日朝〆行：" + array);
 
   var mail = 0;
   if (array[0][1] == "") { mail = 1; }

@@ -1,35 +1,29 @@
-//統計★botにも
+//統計★bot
 function mail_summary(body) {
-  var address = "youseimale@gmail.com";
-  var subject = "笠間店統計情報";
-
-  //通知
-  MailApp.sendEmail(address, subject, body);
-  botLib.pushSB(subject, body);
+  var subject = "笠間店日報";
+  botLib.pushSB(subject, body);//botへ通知
+  //MailApp.sendEmail("youseimale@gmail.com", subject, body);//メール通知
 
   const sheetLog = bbsLib.getSheetByIdGid(id_bbLog, gid_useSumDay);
-  sheetLog.getRange(1, 1).setNote(subject + "\n" + body);//bot返信用にメールの内容をとっておく
+  sheetLog.getRange(1, 1).setNote(subject + "\n" + body);//「統計」コマンド返信用に内容をとっておく
 }
 
-//発注警告★botにも
+//発注警告★bot
 function mail_order() {
-  var address = "youseimale@gmail.com";
-  const subject = '本日朝締め発注が終わっていない可能性'; //件名
-  let body = `本日朝締めの発注の一部または全部が未報告であり、終わっていない可能性があります。
+  const subject = '笠間店発注未報告通知'; //件名
+  let body = `本日朝締めの発注の一部または全部が未報告のため、終わっていない可能性があります。
 確認して下さい。
 https://docs.google.com/spreadsheets/d/1sEKCFs6oNzbEkRgt2Z2aq_4mOGQXMU7dcFTXPNYf-wg/edit#gid=648587868
 `;
 
-  //通知
-  MailApp.sendEmail(address, subject, body);
-  botLib.pushSB(subject, body);
+  botLib.pushSB(subject, body);//通知
 }
 
 //opt1=シート名重複
 //opt2=共有登録なし
-//opt3=新人作成したとき→youseimale★botにも
+//opt3=新人作成したとき→★bot
 //opt4=新人削除しようとしたがシート名が見つからない
-//opt5=新人削除したとき→youseimale★botにも
+//opt5=新人削除したとき→★bot
 function mail_sinjin(address, sinjinN, opt) {
 
   var subject = "";
@@ -63,10 +57,10 @@ https://docs.google.com/forms/d/e/1FAIpQLSexh7ngMQJqgerMn4OK3QFNwTFKLCMilmEWj4dm
 ※このメールは自動配信です。
 `;
 
-  } else if (opt == 3) {//新人作成したとき→youseimale★botにも
-    subject = "新人表が作成されました。"; //件名
-    body = address + "さんが新人表（" + sinjinN + "さん用）を作成。";
-    address = "youseimale@gmail.com";
+  } else if (opt == 3) {//新人作成したとき→★bot
+    subject = "笠間店新人表作成通知"; //件名
+    body = address + "さんが新人表（" + sinjinN + "さん用）を作成しました。";
+    address = "bot";
 
   } else if (opt == 4) {//新人削除しようとしたがシート名が見つからない
     subject = '入力された名称のシートは無いようです。'; //件名
@@ -80,20 +74,21 @@ https://docs.google.com/forms/d/e/1FAIpQLSe04FTp2UNkWXTZdRXgjNb-BPGxMm6l35SfvYyi
 ※このメールは自動配信です。
 `;
 
-  } else if (opt == 5) {//新人削除したとき→youseimale★botにも
-    subject = "新人表が手動削除されました。"; //件名
-    body = address + "さんが新人表（" + sinjinN + "）を手動削除。";
-    address = "youseimale@gmail.com";
+  } else if (opt == 5) {//新人削除したとき→★bot
+    subject = "笠間店新人表手動削除通知"; //件名
+    body = address + "さんが新人表（" + sinjinN + "）を手動削除しました。";
+    address = "bot";
 
   } else {
     Logger.log("opt指定エラー");
     return;
   }
 
-  //通知
-  MailApp.sendEmail(address, subject, body);
-  if (opt == 3 || opt == 5) {
+  //メールor通知
+  if (address == "bot") {
     botLib.pushSB(subject, body);
+  } else {
+    MailApp.sendEmail(address, subject, body);
   }
 
 }

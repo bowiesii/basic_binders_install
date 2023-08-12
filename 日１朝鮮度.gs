@@ -1,8 +1,9 @@
-//鮮度色付け（日１、朝）、色統計（※実行ログは統合ログを見よ）
+//鮮度の★赤色付け（日１、朝）、色統計（※実行ログは統合ログを見よ）
 function fcheckLogDaily() {
 
   const sheet = bbsLib.getSheetByIdGid(id_bb, gid_fcheck);
   const sheetSum = bbsLib.getSheetByIdGid(id_bbLog, gid_fcheckDaySum);//日ごと統計
+
   var r_red_p = sheetSum.getRange(2, 8).getValue();//前回の赤割合
 
   //本体ファイル色付けの更新
@@ -10,6 +11,7 @@ function fcheckLogDaily() {
   var maxcol = sheet.getLastColumn();
   var sheet_val = sheet.getRange(1, 1, maxrow, maxcol).getDisplayValues();
   var sheet_note = sheet.getRange(1, 1, maxrow, maxcol).getNotes();
+
   var n_white = 0;
   var n_pink = 0;
   var n_red = 0;
@@ -26,7 +28,6 @@ function fcheckLogDaily() {
           var ddate = new Date(string_date);
           var ddate_t = new Date(today_ymd);
           var dd = (ddate_t - ddate) / 86400000;//経過日数（ミリ秒を日に変換）
-          Logger.log(r + " " + c + " " + string_date + " " + dd);
 
           //最終作業日15日～45日後にかけて徐々に赤くなる
           if (dd <= 15) {
@@ -61,6 +62,7 @@ function fcheckLogDaily() {
   bbsLib.addLogFirst(sheetSum, 2, [sumary], 8, 10000);
 
   r_red_p = r_red - r_red_p;
+
   //赤割合、前回比を返す
   return { r_red, r_red_p };
 

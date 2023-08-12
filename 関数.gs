@@ -27,26 +27,28 @@ function copyToNewSpreadsheet(fromSheet, toFolderID, newSpreadsheetName) {
 
 }
 
-//シート全体を保護、ただし灰色セル以外は編集可能に
-function protectExceptGray(sheet) {
+//シート１からシート２へ、シート保護したうえで非保護レンジをコピーする
+//灰色セルでひとつひとつ設定すると、シート２が重くなるので。。
+function copySheetProtection(sheet1, sheet2) {
 
-  var protection = sheet.protect();
-  protection.removeEditors(protection.getEditors());//編集者をすべて削除
-  var noProtRanges = [];//保護しない範囲の配列を作る
+  var protection1 = sheet1.protect();
+  var ranges1 = protection1.getUnprotectedRanges();//非保護レンジの配列
+  var protection2 = sheet2.protect();
+  protection2.removeEditors(protection2.getEditors());//編集者をすべて削除
+  if (ranges1 == []) { return; }
+  var ranges2 = [];
 
-  var maxrow = sheet.getLastRow();
-  var maxcol = sheet.getLastColumn();
-  var bgcary = sheet.getRange(1, 1, maxrow, maxcol).getBackgrounds();
-  for (let r = 1; r <= maxrow; r++) {
-    for (let c = 1; c <= maxcol; c++) {
-      if (bgcary[r - 1][c - 1] != "#b7b7b7") {//灰色以外は保護解除
-        noProtRanges.push(sheet.getRange(r, c));//範囲を追加
-      }
-    }
+  for (r = 0; r <= ranges1.length - 1; r++) {
+    let row = ranges1[r].getRow();
+    let col = ranges1[r].getColumn();
+    let rowN = ranges1[r].getNumRows();
+    let colN = ranges1[r].getNumColumns();
+    //Logger.log(r + ">" + row + " " + col + " " + rowN + " " + colN);
+    ranges2.push(sheet2.getRange(row, col, rowN, colN));
   }
 
-  Logger.log(noProtRanges.length);
-  protection.setUnprotectedRanges(noProtRanges);//範囲配列を保護の例外にする
+  protection2.setUnprotectedRanges(ranges2);
 
 }
+
 

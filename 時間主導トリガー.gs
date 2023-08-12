@@ -11,7 +11,8 @@ function dailyMorning() {
   var simeiS = simeiLogDaily();
   var botS = botLogDaily();
   var { r_red, r_red_p } = fcheckLogDaily();//色付け・色付け統計のみ、赤割合返す★この書き方の場合元関数と同じシンボル名でないといけないらしい。
-  var { allS, orderS, wtaskS, sinjinS, freshS } = intLogDaily();//統合ログ
+  var { r_blue, r_blue_p } = cleanLogDaily();//色付け・色付け統計のみ、青割合返す
+  var { allS, orderS, wtaskS, sinjinS, freshS, cleanS } = intLogDaily();//統合ログ
 
   //前回の記録の日時
   var prevTime = sheetLog.getRange(2, 1).getDisplayValue();
@@ -33,14 +34,14 @@ function dailyMorning() {
   var botUserS_p = botUserS - sheetLog.getRange(2, 5).getDisplayValue();//前回からの変化
 
   //使用統計ログ書き込み
-  var logary = [today_ymddhm, shareS, userpropS, sinjinNum, botUserS, simeiS, botS, orderM, allS, orderS, wtaskS, sinjinS, freshS];
-  bbsLib.addLogFirst(sheetLog, 2, [logary], 13, 10000);
+  var logary = [today_ymddhm, shareS, userpropS, sinjinNum, botUserS, simeiS, botS, orderM, allS, orderS, wtaskS, sinjinS, freshS, cleanS];
+  bbsLib.addLogFirst(sheetLog, 2, [logary], 14, 10000);
 
   //統計報告通知
-  var body = "〇" + today_ymddhm + " 時点集計の日報です。";
+  var body = "〇" + today_ymddhm + "集計";
   if (orderM == 1) {
     body = body + "\n★" + today_md + " 朝締め発注一部未報告でした。";
-    body = body + "https://docs.google.com/spreadsheets/d/1sEKCFs6oNzbEkRgt2Z2aq_4mOGQXMU7dcFTXPNYf-wg/edit#gid=648587868";
+    body = body + "\n" + "https://docs.google.com/spreadsheets/d/1sEKCFs6oNzbEkRgt2Z2aq_4mOGQXMU7dcFTXPNYf-wg/edit#gid=648587868";
   } else {
     body = body + "\n" + today_md + " 朝締め発注は終わっています。";
   }
@@ -49,7 +50,8 @@ function dailyMorning() {
   body = body + "\n新人表の数：" + sinjinNum + "（前回比" + sinjinNum_p + "）";
   body = body + "\n" + "botユーザー数：" + botUserS + "（前回比" + botUserS_p + "）";
   body = body + "\n鮮度表の赤割合：" + r_red + "%（前回比" + r_red_p + "%）";
-  body = body + "\n〇前回日報（" + prevTime + "）からの増加ログ";
+  body = body + "\n清掃表の青割合：" + r_blue + "%（前回比" + r_blue_p + "%）";
+  body = body + "\n\n〇前回日報（" + prevTime + "）からの増加ログ";
   body = body + "\n氏名ログ数：" + simeiS;
   body = body + "\n" + "bot受信回数：" + botS;
   body = body + "\n統合ログ数（管理者以外）：" + allS;
@@ -57,6 +59,7 @@ function dailyMorning() {
   body = body + "\n週タスクログ数：" + wtaskS;
   body = body + "\n新人教育ログ数：" + sinjinS;
   body = body + "\n鮮度チェックログ数：" + freshS;
+  body = body + "\n清掃ログ数：" + cleanS;
   body = body + "\n" + "使用統計（日１朝更新）" + "https://docs.google.com/spreadsheets/d/17bZ83U_NeHXLT__NOV0zfHd2B8XZIBEgKfd_akNZDuY/edit#gid=733648789";
 
   mail_summary(body);

@@ -20,7 +20,7 @@ function botLogDaily() {
   return sum;
 }
 
-/*※認証アカウントでないと使えない。
+/*※認証済アカウントでないと使えない。
 //bot登録者リスト更新（日１朝）※その都度全部クリアする
 function botUsersDaily() {
 
@@ -56,6 +56,7 @@ function intLogDaily() {
   var wtaskS = 0;
   var sinjinS = 0;
   var freshS = 0;
+  var cleanS = 0;
 
   if (allS != 0) {//getvaluesのエラー防止
     var snAry = sheetTempLog.getRange(2, 3, allS, 1).getValues();
@@ -66,6 +67,8 @@ function intLogDaily() {
         orderS++;
       } else if (snAry[row][0] == "鮮度") {
         freshS++;
+      } else if (snAry[row][0] == "清掃") {
+        cleanS++;
       } else if (snAry[row][0].includes("週バ")) {
         wtaskS++;
       }
@@ -75,7 +78,7 @@ function intLogDaily() {
   const sheetLog = bbsLib.getSheetByIdGid(id_bbLog, gid_intLog);
   bbsLib.replaceLogFirst(sheetTempLog, sheetLog);//ログ移動
 
-  return { allS, orderS, wtaskS, sinjinS, freshS };
+  return { allS, orderS, wtaskS, sinjinS, freshS, cleanS };
 }
 
 //新人人数カウント（日１、朝）

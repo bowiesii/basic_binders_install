@@ -77,10 +77,12 @@ function newSinjin(e) {
   newSheet.getRange(3, 4).setValue(today_ymd);//最終更新
   newSheet.getRange(4, 4).setValue(newSheet.getSheetId());//GID
 
+  //保護設定を原本からコピー
+  copySheetProtection(sheetOri, newSheet);
+
   var logary = [today_ymddhm, sinjinN, email, newSheet.getSheetId(), ""];
   bbsLib.addLogFirst(sheetLog, 2, [logary], 5, 10000);
 
-  protectExceptGray(newSheet);//シートを保護、灰色セル以外は編集可
   mail_sinjin(email, sinjinN, 3);//報告メール（ゆくゆくはbot？）
 
 }
