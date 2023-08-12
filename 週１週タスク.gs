@@ -95,6 +95,10 @@ function wtaskLogWeekly() {
     sheetLog.deleteRow(10001);
   }
 
+  //週タスク(古)にシートコピー（削除はしない）※基本バインダー_ログではなく個別シートで保管する場合。
+  //var newfilename = ary[0][1].getRange(3, 2).getDisplayValue() + "週作業";
+  //copyToNewSpreadsheet(ary[0][1], "1yZFBtu25YPur7fpRcGTQt94SUcXWjLV2", newfilename);//移動
+
   Logger.log("週タスク表編集・名前変更段階");
   //バインダー番号（２，２）セルは永久に変更しない。
   ary[0][1].getRange(3, 2).setValue(ary[0][2]);//作業週（３，２）セル変更
