@@ -37,13 +37,13 @@ function dailyMorning() {
   var logary = [today_ymddhm, shareS, userpropS, sinjinNum, botUserS, simeiS, botS, orderM, allS, orderS, wtaskS, sinjinS, freshS, cleanS];
   bbsLib.addLogFirst(sheetLog, 2, [logary], 14, 10000);
 
-  //統計報告通知
-  var body = "〇" + today_ymddhm + "集計";
+  //統計テキスト→保管。
+  var body = "〇" + today_ymddhm + "集計日報";
   if (orderM == 1) {
-    body = body + "\n★" + today_md + " 朝締め発注一部未報告でした。";
+    body = body + "\n上の時点で" + today_md + " 朝締め発注一部未報告でした。";
     body = body + "\n" + "https://docs.google.com/spreadsheets/d/1sEKCFs6oNzbEkRgt2Z2aq_4mOGQXMU7dcFTXPNYf-wg/edit#gid=648587868";
   } else {
-    body = body + "\n" + today_md + " 朝締め発注は終わっています。";
+    body = body + "\n上の時点で" + today_md + " 朝締め発注は報告済み。";
   }
   body = body + "\n共有登録者数：" + shareS + "（前回比" + shareS_p + "）";
   body = body + "\n氏名数（推定）：" + userpropS + "（前回比" + userpropS_p + "）";
@@ -60,9 +60,10 @@ function dailyMorning() {
   body = body + "\n新人教育ログ数：" + sinjinS;
   body = body + "\n鮮度チェックログ数：" + freshS;
   body = body + "\n清掃ログ数：" + cleanS;
-  body = body + "\n" + "使用統計（日１朝更新）" + "https://docs.google.com/spreadsheets/d/17bZ83U_NeHXLT__NOV0zfHd2B8XZIBEgKfd_akNZDuY/edit#gid=733648789";
+  body = body + "\n" + "統合ログ（日１朝更新）" + "https://docs.google.com/spreadsheets/d/17bZ83U_NeHXLT__NOV0zfHd2B8XZIBEgKfd_akNZDuY/edit#gid=392913159";
 
-  mail_summary(body);
+  mail_summary(body);//【管理者】へメール
+  sheetLog.getRange(1, 1).setNote(body);//「統計」コマンド返信用に内容をとっておく
 
 }
 

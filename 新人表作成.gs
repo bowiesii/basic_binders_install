@@ -22,21 +22,21 @@ function newSinjin(e) {
   //共有登録されていなければスルー→メール
   if (shareingOrNot(email) == false) {
     Logger.log("共有登録されていない");
-    mail_sinjin(email, sinjinN, 2);
+    mail_sinjin(email, sinjinN, 2);//本人
     return;
   }
 
   //既に新人氏名のシートがあった場合スルー→メール
   if (bbsLib.getGIDbysheetname(bbSpreadSheet, newSheetName) != null) {
     Logger.log("作成済み");
-    mail_sinjin(email, sinjinN, 1);
+    mail_sinjin(email, sinjinN, 1);//本人
     return;
   }
 
   var sheetOri = bbsLib.getSheetByIdGid(id_sinjinOri, gid_sinjinOri);//原本
   var sheetLog = bbsLib.getSheetByIdGid(id_bbLog, gid_sinjinList);//新人リスト
 
-  //長期経過新人シート→削除と移動・ログ記録
+  //長期経過新人シート→自動削除と移動・ログ記録
   var sheetS = bbSpreadSheet.getSheets();//すべてのシートが配列に
   for (let na = 0; na <= sheetS.length - 1; na++) {
     if (sheetS[na].getSheetName().includes("【新】")) {
@@ -83,7 +83,8 @@ function newSinjin(e) {
   var logary = [today_ymddhm, sinjinN, email, newSheet.getSheetId(), ""];
   bbsLib.addLogFirst(sheetLog, 2, [logary], 5, 10000);
 
-  mail_sinjin(email, sinjinN, 3);//報告メール（ゆくゆくはbot？）
+  mail_sinjin(email, sinjinN, 6);//本人
+  mail_sinjin(email, sinjinN, 3);//bot
 
 }
 

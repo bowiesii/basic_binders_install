@@ -20,7 +20,7 @@ function delSinjin(e) {
   //共有登録されていなければスルー→メール
   if (shareingOrNot(email) == false) {
     Logger.log("共有登録されていない");
-    mail_sinjin(email, delSheetName, 2);
+    mail_sinjin(email, delSheetName, 2);//本人
     return;
   }
 
@@ -47,12 +47,14 @@ function delSinjin(e) {
         }
       }
 
-      mail_sinjin(email, delSheetName, 5);//報告メール
+      mail_sinjin(email, delSheetName, 7);//本人
+      mail_sinjin(email, delSheetName, 5);//bot
       return;
     }
   }
 
-  mail_sinjin(email, delSheetName, 4);//シートが見つからないとき返信メール
+  //シートが見つからないとき返信メール
+  mail_sinjin(email, delSheetName, 4);//本人
   Logger.log("cannot find sheet");
 
 }
