@@ -20,24 +20,6 @@ function botLogDaily() {
   return sum;
 }
 
-/*※認証済アカウントでないと使えない。
-//bot登録者リスト更新（日１朝）※その都度全部クリアする
-function botUsersDaily() {
-
-  var ary = botLib.getAllFollowerIdAndName();//既に２次元
-
-  var sum = 0;
-  if(ary == [""]){return;}
-
-  var sum = ary.length;
-  const sheetLog = bbsLib.getSheetByIdGid(id_bbLog, gid_botUser);
-  sheetLog.getRange(2, 1, sheetLog.getLastRow() - 1, 2).clearContent();//まずクリア
-  sheetLog.getRange(2, 1, sum, 2).setValues(ary);
-
-  return sum;
-}
-*/
-
 //botフォロワー-ブロックの数を取得
 function botUserNumDaily() {
   var { followS, blockS } = botLib.getFBNum();
@@ -59,7 +41,7 @@ function intLogDaily() {
   var cleanS = 0;
 
   if (allS != 0) {//getvaluesのエラー防止
-    var snAry = sheetTempLog.getRange(2, 3, allS, 1).getValues();
+    var snAry = sheetTempLog.getRange(2, 4, allS, 1).getValues();
     for (let row = 0; row <= snAry.length - 1; row++) {
       if (snAry[row][0].includes("【新】")) {//自由にシート名つけられえるのでこれが最初
         sinjinS++;

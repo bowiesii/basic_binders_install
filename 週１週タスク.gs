@@ -10,7 +10,6 @@ function wtaskLogWeekly() {
   const sheet1 = bbsLib.getSheetByIdGid(id_bb, gid_wtask1);
   const sheet2 = bbsLib.getSheetByIdGid(id_bb, gid_wtask2);
   const sheet3 = bbsLib.getSheetByIdGid(id_bb, gid_wtask3);
-  const sheetLog = bbsLib.getSheetByIdGid(id_bbLog, gid_wtaskWeek);
 
   //日付をB3から取り出し（ファイル名は変更できるため保護セルから）
   var sheet1_n = sheet1.getRange(3, 2).getDisplayValue();
@@ -75,6 +74,10 @@ function wtaskLogWeekly() {
 
 
   Logger.log("ログ記録段階");
+
+  /*
+  //基本バインダー_ログ内シートにバックアップする場合。
+  const sheetLog = bbsLib.getSheetByIdGid(id_bbLog, gid_wtaskWeek);
   //ログシートに[0]をログ記録する
   var logary = [today_ymddhm];//[0]は本日日付
   logary[1] = ary[0][1].getRange(2, 2).getValue();//バインダー
@@ -94,10 +97,11 @@ function wtaskLogWeekly() {
   if (sheetLog.getLastRow() >= 10001) {  //10001行以上なら10001行目を削除
     sheetLog.deleteRow(10001);
   }
+  */
 
   //週タスク(古)にシートコピー（削除はしない）※基本バインダー_ログではなく個別シートで保管する場合。
-  //var newfilename = ary[0][1].getRange(3, 2).getDisplayValue() + "週作業";
-  //copyToNewSpreadsheet(ary[0][1], "1yZFBtu25YPur7fpRcGTQt94SUcXWjLV2", newfilename);//移動
+  var newfilename = ary[0][1].getRange(3, 2).getDisplayValue() + "週作業";
+  copyToNewSpreadsheet(ary[0][1], "1NEsWHJLqXgrWANW82Tybox04B85WYYp9", newfilename);//移動
 
   Logger.log("週タスク表編集・名前変更段階");
   //バインダー番号（２，２）セルは永久に変更しない。

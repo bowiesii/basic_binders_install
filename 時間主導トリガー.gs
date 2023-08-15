@@ -1,4 +1,4 @@
-//日１早朝（メール報告も）※ゆくゆくはbot
+//日１早朝（メール報告も）
 function dailyMorning() {
 
   //使用統計ログ
@@ -46,7 +46,7 @@ function dailyMorning() {
     body = body + "\n\n上の時点で" + today_md + " 朝締め発注は報告済み。";
   }
   body = body + "\n共有登録者数：" + shareS + "（前回比" + shareS_p + "）";
-  body = body + "\n氏名数（推定）：" + userpropS + "（前回比" + userpropS_p + "）";
+  body = body + "\n実行者氏名数：" + userpropS + "（前回比" + userpropS_p + "）";
   body = body + "\n新人表の数：" + sinjinNum + "（前回比" + sinjinNum_p + "）";
   body = body + "\n" + "botユーザー数：" + botUserS + "（前回比" + botUserS_p + "）";
   body = body + "\n鮮度表の赤割合：" + r_red + "%（前回比" + r_red_p + "%）";
@@ -76,3 +76,18 @@ function dailyNoon() {
 function weeklySunday() {
   wtaskLogWeekly();
 }
+
+//週１週報作成
+function weeklySummaly() {
+
+  const sheetLog = bbsLib.getSheetByIdGid(id_bbLog, gid_makeLogWeek);
+  var date1 = new Date(sheetLog.getRange(2, 1).getValue());//前回作成日時
+
+  var { editN, ptN, newSpS } = makeSummalyInPeriod(date1, today, "1DCXss-JSW9z12z7Xx7dFtJ8x_6yrsccL");
+
+  var url = bbsLib.toUrl(newSpS.getId(), "0");
+  var logAry = [today_ymddhm, editN, ptN, url]
+  bbsLib.addLogFirst(sheetLog, 2, [logAry], 4, 10000);
+
+}
+
