@@ -40,10 +40,10 @@ function dailyMorning() {
   //統計テキスト→保管。
   var body = "〇" + today_ymddhm + "集計日報";
   if (orderM == 1) {
-    body = body + "\n上の時点で" + today_md + " 朝締め発注一部未報告でした。";
+    body = body + "\n\n上の時点で" + today_md + " 朝締め発注一部未報告でした。";
     body = body + "\n" + "https://docs.google.com/spreadsheets/d/1sEKCFs6oNzbEkRgt2Z2aq_4mOGQXMU7dcFTXPNYf-wg/edit#gid=648587868";
   } else {
-    body = body + "\n上の時点で" + today_md + " 朝締め発注は報告済み。";
+    body = body + "\n\n上の時点で" + today_md + " 朝締め発注は報告済み。";
   }
   body = body + "\n共有登録者数：" + shareS + "（前回比" + shareS_p + "）";
   body = body + "\n氏名数（推定）：" + userpropS + "（前回比" + userpropS_p + "）";

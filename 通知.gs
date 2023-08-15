@@ -1,12 +1,9 @@
-
-//統計★bot・・・毎日長文だとウザいので統計コマンドで確認してもらう。
-//管理者へは生存確認的目的でメール送る。
+//統計※管理者へは生存確認的目的でメール送る。
+//ユーザーは統計コマンドで確認してもらう。
 function mail_summary(body) {
   var subject = "笠間店日報";
   MailApp.sendEmail("youseimale@gmail.com", subject, body);//【管理者】にメール通知のみ。
-
 }
-
 
 //発注警告★bot
 function mail_order() {
@@ -24,8 +21,8 @@ https://docs.google.com/spreadsheets/d/1sEKCFs6oNzbEkRgt2Z2aq_4mOGQXMU7dcFTXPNYf
 //opt3=新人作成したとき→★bot
 //opt4=シート名なし
 //opt5=新人削除したとき→★bot
-//opt6=新人作成したとき///////////////////////////
-//opt7=新人削除したとき///////////////////////////
+//opt6=新人作成したとき
+//opt7=新人削除したとき
 function mail_sinjin(address, sinjinN, opt) {
 
   var subject = "";
