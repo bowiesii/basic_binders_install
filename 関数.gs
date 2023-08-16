@@ -25,7 +25,7 @@ function rowSum(ary) {
   var sum = 0;
 
   for (let r = 0; r <= ary.length - 1; r++) {
-    if (ary[r].isFinite()) {//数値だったらプラス
+    if (isFinite(ary[r])) {//数値だったらプラス
       sum = sum + ary[r];
     }
   }

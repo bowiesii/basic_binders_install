@@ -41,7 +41,7 @@ function intLogDaily() {
   var cleanS = 0;
 
   if (allS != 0) {//getvaluesのエラー防止
-    var snAry = sheetTempLog.getRange(2, 4, allS, 1).getValues();
+    var snAry = sheetTempLog.getRange(2, 7, allS, 1).getValues();//シート名の列
     for (let row = 0; row <= snAry.length - 1; row++) {
       if (snAry[row][0].includes("【新】")) {//自由にシート名つけられえるのでこれが最初
         sinjinS++;

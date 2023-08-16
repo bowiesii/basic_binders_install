@@ -34,10 +34,16 @@ function newSummaly(e) {
 //フォルダに出力する。
 function makeSummalyInPeriod(date1, date2, folderId, plusFileName) {
 
+  var date1 = new Date("2023/8/13 00:00");
+  var date2 = new Date("2023/8/14 23:59");
+
   //行数を調べる
   var row_1 = dateToRow(date1);
   var row_2 = dateToRow(date2);
-  var row_N = row_2 - row_1;
+  var row_N = row_1 - row_2;
+  row_2 = row_2 + 1;
+
+  Logger.log("row_2=" + row_2 + ",row_N=" + row_N);
 
   if (row_N == 0) {//データが無いので週報は作らない
     Logger.log("no data in that period");
@@ -48,17 +54,23 @@ function makeSummalyInPeriod(date1, date2, folderId, plusFileName) {
   const transpose = a => a[0].map((_, c) => a.map(r => r[c]));//行列入れ替える関数
 
   //週報ファイルを作る
-  var rawAry_r1 = sheetRaw.getRange(1, 1, 1, 12).getValues();//生データ１行目
-  var rawAry = sheetRaw.getRange(row_1 + 1, 1, row_N, 12).getValues();//生データ
-  rawAry.unshift(rawAry_r1);//先頭に目次を追加
+  var rawAry_r1 = sheetRaw.getRange(1, 1, 1, 15).getDisplayValues();//生データ１行目（２次元）
+  var rawAry = sheetRaw.getRange(row_2, 1, row_N, 15).getDisplayValues();//生データ
+  rawAry.unshift(rawAry_r1[0]);//先頭に目次を追加
+
+  Logger.log("rawAry");
+  for (let r = 0; r <= rawAry.length - 1; r++) {
+    Logger.log(rawAry[r]);
+  }
+
   var uAry = [];//ユーザーごとのまとめ
   uAry[0] = ["実行者（simei）(0)", "実行者番号(1)", "編集数合計(2)", "発注編集数(3)", "週バ編集数(4)", "鮮度編集数(5)", "清掃編集数(6)", "新人編集数(7)", "ポイント合計(8)", "発注pt(9)", "週バpt(10)", "鮮度pt(11)", "清掃pt(12)", "新人pt(13)"];
 
   for (let r = 1; r <= rawAry.length - 1; r++) {//１行目はスルー
-    let user = rawAry[r][1];//氏名※無ければ空文字
-    let userN = rawAry[r][2];//氏名ナンバー※無ければ空文字
-    let sN = rawAry[r][3];//シート名
-    let pt = rawAry[r][8];//ポイント
+    let user = rawAry[r][4];//氏名※無ければ空文字
+    let userN = rawAry[r][5];//氏名ナンバー※無ければ空文字
+    let sN = rawAry[r][6];//シート名
+    let pt = Number(rawAry[r][11]);//ポイント
 
     if (userN == "") {
       userN = -1;
@@ -67,12 +79,12 @@ function makeSummalyInPeriod(date1, date2, folderId, plusFileName) {
 
     if (userN == 3) {//店機器のとき、userから探す
 
-      for (let rr = 1; rr <= uAry.length - 1;) {//１行目はスルーして探す
+      for (let rr = 0; rr <= uAry.length - 1;) {//探す
 
         if (user != uAry[rr][0]) {//実行者名違ってたらスルーして次
           if (rr == uAry.length - 1) {//でも最後じゃんこれ
-            uAry[rr] = [[user], userN, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];//あらたな配列→下へ続く
             rr++;
+            uAry[rr] = [[user], userN, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];//あらたな配列→下へ続く
           } else {
             rr++;
             continue;
@@ -105,12 +117,12 @@ function makeSummalyInPeriod(date1, date2, folderId, plusFileName) {
 
     } else {//店機器でないとき、userNから探す
 
-      for (let rr = 1; rr <= uAry.length - 1;) {//１行目はスルーして探す
+      for (let rr = 0; rr <= uAry.length - 1;) {//探す
 
         if (userN != uAry[rr][1]) {//実行者番号違ったらスルーして次
           if (rr == uAry.length - 1) {//でも最後じゃんこれ
-            uAry[rr] = [[user], userN, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];//あらたな配列→下へ続く
             rr++;
+            uAry[rr] = [[user], userN, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];//あらたな配列→下へ続く
           } else {
             rr++;
             continue;
@@ -142,7 +154,7 @@ function makeSummalyInPeriod(date1, date2, folderId, plusFileName) {
           if (uAry[rr][0][rrr] == user) {
             break;
           } else if (rrr == uAry[rr][0].length - 1) {//最後じゃんこれ→配列に追加
-            uAry[rr][0], push(user);
+            uAry[rr][0].push(user);
           }
         }
 
@@ -174,22 +186,25 @@ function makeSummalyInPeriod(date1, date2, folderId, plusFileName) {
   uAry = transpose(uAry);//行列入れ替え
   //これでuAryが完成
 
+  Logger.log("uAry");
   for (let r = 0; r <= uAry.length - 1; r++) {
     Logger.log(uAry[r]);
   }
 
-  //報告ファイルを作成(rawAry,uAry)
-  const date1_f = Utilities.formatDate(date1, "JST", "yyyy/MM/dd(E)HH:mm");
-  const date2_f = Utilities.formatDate(date2, "JST", "yyyy/MM/dd(E)HH:mm");
-  var newFileName = plusFileName + "_" + date1_f + "_から_" + date2_f + "_まで";
-
-  var newSpS = copyAryToNewSpreadSheet(uAry, folderId, newFileName, "ユーザーごとの統計");
-  copyAryToSpreadSheet(newSpS, rawAry, "生データ");
-
-  var editN = uAry[rowU][2];//編集数合計
-  var ptN = uAry[rowU][8];//ポイント合計
-
-  return { editN, ptN, newSpS };//作ったスプシも返す
+  /*
+    //報告ファイルを作成(rawAry,uAry)
+    const date1_f = Utilities.formatDate(date1, "JST", "yyyy/MM/dd(E)HH:mm");
+    const date2_f = Utilities.formatDate(date2, "JST", "yyyy/MM/dd(E)HH:mm");
+    var newFileName = plusFileName + "_" + date1_f + "_から_" + date2_f + "_まで";
+  
+    var newSpS = copyAryToNewSpreadSheet(uAry, folderId, newFileName, "ユーザーごとの統計");
+    copyAryToSpreadSheet(newSpS, rawAry, "生データ");
+  
+    var editN = uAry[rowU][2];//編集数合計
+    var ptN = uAry[rowU][8];//ポイント合計
+  
+    return { editN, ptN, newSpS };//作ったスプシも返す
+    */
 
 
 }
