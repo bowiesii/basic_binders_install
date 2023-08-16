@@ -1,3 +1,37 @@
+//★これは月曜のみ、朝５～６時、日報後、週１週報作成
+function weeklyMonday() {
+
+  const sheetLog = bbsLib.getSheetByIdGid(id_bbLog, gid_makeLogWeek);
+  var date1 = new Date(sheetLog.getRange(2, 1).getValue());//前回作成日時
+
+  //作成
+  var { editN, ptN, newSpS } = makeSummalyInPeriod(date1, today, "1DCXss-JSW9z12z7Xx7dFtJ8x_6yrsccL", "週報");
+
+  var url = "";
+  var filename = "";
+  var logAry = [today_ymddhm, 0, 0, ""];
+  var body = today_ymddhm + "週報作成されませんでした。";
+
+  if (newSpS != null) {//作成された
+    url = bbsLib.toUrl(newSpS.getId(), "0");
+    filename = newSpS.getName();
+    logAry = [today_ymddhm, editN, ptN, url];
+
+    body = today_ymddhm + "作成週報";
+    body = body + "\n編集数" + editN;
+    body = body + "\nポイント数" + ptN;
+    body = body + "\n" + filename;
+    body = body + "\n" + url;
+  }
+
+  body = body + "\n週報フォルダ\n" + "https://drive.google.com/drive/folders/1DCXss-JSW9z12z7Xx7dFtJ8x_6yrsccL";
+
+  bbsLib.addLogFirst(sheetLog, 2, [logAry], 4, 10000);
+  sheetLog.getRange(1, 1).setNote(body);//bot用にメモしておく
+  mail_summalyMonday(body);
+
+}
+
 //氏名ログ移動（日１、朝）
 function simeiLogDaily() {
 

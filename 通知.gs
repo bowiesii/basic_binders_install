@@ -1,17 +1,36 @@
 //期間統計作成者へメール
-function mail_summary(email, filename, fileUrl) {
-  var subject = "【笠間店】期間統計を作成しました。";
-  var body = "期間統計出力フォルダ";
-  body = body + "\n" + "https://drive.google.com/drive/folders/19t8-VEtn-LQ4pIP2Tdet4Cd7mco815YE";
-  body = body + "\n" + filename;
-  body = body + "\n" + fileUrl
-  MailApp.sendEmail(email, subject, body);//本人にメール通知
+function mail_makeSummary(opt, email, filename, fileUrl) {
+  if (opt == 0) {
+    let subject = "【笠間店】期間統計の作成に失敗しました。";
+    let body = "期間の設定が誤っているか、もしくは期間内にデータが無かったと思われます";
+    body = body + "\n\n問題が発生しましたら、浦野（youseimale@gmail.com）まで連絡をお願いします。\n※このメールは自動配信です。";
+    MailApp.sendEmail(email, subject, body);//本人にメール通知
+
+  } else if (opt == 1) {
+    let subject = "【笠間店】期間統計を作成しました。";
+    let body = "期間統計出力フォルダ";
+    body = body + "\n" + "https://drive.google.com/drive/folders/19t8-VEtn-LQ4pIP2Tdet4Cd7mco815YE";
+    body = body + "\n\n" + "作成したファイル";
+    body = body + "\n" + filename;
+    body = body + "\n" + fileUrl
+    body = body + "\n" + "あなたにこのファイルの編集権限を付与しました。";
+    body = body + "\n\n問題が発生しましたら、浦野（youseimale@gmail.com）まで連絡をお願いします。\n※このメールは自動配信です。";
+    MailApp.sendEmail(email, subject, body);//本人にメール通知
+
+  }
+
 }
 
 //統計※管理者へは生存確認的目的でメール送る。
 //ユーザーは統計コマンドで確認してもらう。
 function mail_summaryDay(body) {
-  var subject = "笠間店日報";
+  var subject = "（管理者向け）笠間店日報";
+  MailApp.sendEmail("youseimale@gmail.com", subject, body);//【管理者】にメール通知のみ。
+}
+
+//週報→youseimale
+function mail_summalyMonday(body) {
+  var subject = "（管理者向け）笠間店週報";
   MailApp.sendEmail("youseimale@gmail.com", subject, body);//【管理者】にメール通知のみ。
 }
 
@@ -59,7 +78,7 @@ https://docs.google.com/forms/d/e/1FAIpQLSc0yBXDQc6dxrZxiMApc5tT0KgOCCHvvKeQuMmo
 
   } else if (opt == 2) {//共有未登録のとき
     subject = 'ファイルの共有登録を行って下さい。'; //件名
-    body = `新人教育シートを作成or削除する前に、お使いのGoogleアカウントでの笠間店ファイルの共有登録が必要です。
+    body = `フォームよりファイル・シートを作成or削除する前に、お使いのGoogleアカウントでの笠間店ファイルの共有登録が必要です。
 
 共有登録は以下から。
 https://docs.google.com/forms/d/e/1FAIpQLSexh7ngMQJqgerMn4OK3QFNwTFKLCMilmEWj4dmp1MS7vwi5Q/viewform

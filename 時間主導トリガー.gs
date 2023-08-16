@@ -65,6 +65,13 @@ function dailyMorning() {
   mail_summaryDay(body);//【管理者】へメール
   sheetLog.getRange(1, 1).setNote(body);//「統計」コマンド返信用に内容をとっておく
 
+  SpreadsheetApp.flush();//月曜は週報もやるので一応。（もういちどスプシ読むので）
+
+  //月曜は週報も。
+  if (today_wjpn == "月") {
+    weeklyMonday();
+  }
+
 }
 
 //日１昼
@@ -77,17 +84,4 @@ function weeklySunday() {
   wtaskLogWeekly();
 }
 
-//週１週報作成
-function weeklySummaly() {
-
-  const sheetLog = bbsLib.getSheetByIdGid(id_bbLog, gid_makeLogWeek);
-  var date1 = new Date(sheetLog.getRange(2, 1).getValue());//前回作成日時
-
-  var { editN, ptN, newSpS } = makeSummalyInPeriod(date1, today, "1DCXss-JSW9z12z7Xx7dFtJ8x_6yrsccL");
-
-  var url = bbsLib.toUrl(newSpS.getId(), "0");
-  var logAry = [today_ymddhm, editN, ptN, url]
-  bbsLib.addLogFirst(sheetLog, 2, [logAry], 4, 10000);
-
-}
 

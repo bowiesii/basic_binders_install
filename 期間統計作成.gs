@@ -14,17 +14,37 @@ function newSummaly(e) {
   var startD = answer[1].getResponse();//開始日付
   var endD = answer[2].getResponse();//終了日付
 
+  //共有登録されていなければスルー→メール
+  if (shareingOrNot(email) == false) {
+    Logger.log("共有登録されていない");
+    mail_sinjin(email, "", 2);//本人
+    return;
+  }
+
+  var date1 = new Date(startD);//→00;00にする
+  var date2 = new Date(endD);//→23:59にする
+  date1.setHours(0);
+  date2.setHours(23);
+  date2.setMinutes(59);
+
   var folderId = "19t8-VEtn-LQ4pIP2Tdet4Cd7mco815YE";//出力フォルダは固定
-  var date1 = new Date(startD);
-  var date2 = new Date(endD);
-  date2.setDate(date2.getDate() + 1);//24:00なので日付的には次の日の00:00になる
 
   var { editN, ptN, newSpS } = makeSummalyInPeriod(date1, date2, folderId, plusFileName);
+
+  if (newSpS == null) {//作成されなかった。
+    mail_makeSummary(0, email, "", "");//本人へメール
+  }
+
+  const file = DriveApp.getFileById(newSpS.getId());
+
+  //編集権限を付与
+  file.addEditor(email);
+  file.setShareableByEditors(false);//★編集者による権限操作を禁止する
 
   var filename = newSpS.getName();
   var fileUrl = bbsLib.toUrl(newSpS.getId(), "0");
 
-  mail_summary(email, filename, fileUrl);//本人へメール
+  mail_makeSummary(1, email, filename, fileUrl);//本人へメール
 
 }
 
@@ -34,8 +54,14 @@ function newSummaly(e) {
 //フォルダに出力する。
 function makeSummalyInPeriod(date1, date2, folderId, plusFileName) {
 
-  var date1 = new Date("2023/8/13 00:00");
-  var date2 = new Date("2023/8/14 23:59");
+  //テスト用
+  //var date1 = new Date("2023/8/13 00:00");
+  //var date2 = new Date("2023/8/14 23:59");
+  //var folderId = "19t8-VEtn-LQ4pIP2Tdet4Cd7mco815YE";
+  //var plusFileName = "test";
+
+  Logger.log("date1=" + date1);
+  Logger.log("date2=" + date2);
 
   //行数を調べる
   var row_1 = dateToRow(date1);
@@ -45,26 +71,29 @@ function makeSummalyInPeriod(date1, date2, folderId, plusFileName) {
 
   Logger.log("row_2=" + row_2 + ",row_N=" + row_N);
 
-  if (row_N == 0) {//データが無いので週報は作らない
+  if (row_N == 0) {//データが無いので作らない
     Logger.log("no data in that period");
-    return;
+    let editN = null;
+    let ptN = null;
+    let newSpS = null;
+    return { editN, ptN, newSpS };
   }
 
   const sheetRaw = bbsLib.getSheetByIdGid(id_bbLog, gid_intLog);//統合ログ（ソースデータはこれだけとする。混乱回避のため日ごとデータは使わない）
   const transpose = a => a[0].map((_, c) => a.map(r => r[c]));//行列入れ替える関数
 
-  //週報ファイルを作る
+  //生データを作る
   var rawAry_r1 = sheetRaw.getRange(1, 1, 1, 15).getDisplayValues();//生データ１行目（２次元）
   var rawAry = sheetRaw.getRange(row_2, 1, row_N, 15).getDisplayValues();//生データ
   rawAry.unshift(rawAry_r1[0]);//先頭に目次を追加
-
   Logger.log("rawAry");
   for (let r = 0; r <= rawAry.length - 1; r++) {
     Logger.log(rawAry[r]);
   }
 
+  ////////ユーザー別統計
   var uAry = [];//ユーザーごとのまとめ
-  uAry[0] = ["実行者（simei）(0)", "実行者番号(1)", "編集数合計(2)", "発注編集数(3)", "週バ編集数(4)", "鮮度編集数(5)", "清掃編集数(6)", "新人編集数(7)", "ポイント合計(8)", "発注pt(9)", "週バpt(10)", "鮮度pt(11)", "清掃pt(12)", "新人pt(13)"];
+  uAry[0] = ["実行者（simei）(0)", "実行者番号（simeiN）(1)", "編集数合計(2)", "発注編集数(3)", "週バ編集数(4)", "鮮度編集数(5)", "清掃編集数(6)", "新人編集数(7)", "ポイント合計(8)", "発注pt(9)", "週バpt(10)", "鮮度pt(11)", "清掃pt(12)", "新人pt(13)"];
 
   for (let r = 1; r <= rawAry.length - 1; r++) {//１行目はスルー
     let user = rawAry[r][4];//氏名※無ければ空文字
@@ -72,10 +101,13 @@ function makeSummalyInPeriod(date1, date2, folderId, plusFileName) {
     let sN = rawAry[r][6];//シート名
     let pt = Number(rawAry[r][11]);//ポイント
 
-    if (userN == "") {
+    if (userN == "" || userN == null || userN == undefined) {
       userN = -1;
-      user = "#不明";
     }
+    if (user == "" || user == null || user == undefined) {
+      user = "？";
+    }
+
 
     if (userN == 3) {//店機器のとき、userから探す
 
@@ -179,7 +211,7 @@ function makeSummalyInPeriod(date1, date2, folderId, plusFileName) {
   uAry = transpose(uAry);//行列入れ替え
   var rowU = uAry[0].length;
   uAry[0][rowU] = "合計";
-  uAry[1][rowU] = "###";
+  uAry[1][rowU] = "#";
   for (let r = 2; r <= uAry.length - 1; r++) {
     uAry[r][rowU] = rowSum(uAry[r]);
   }
@@ -190,21 +222,220 @@ function makeSummalyInPeriod(date1, date2, folderId, plusFileName) {
   for (let r = 0; r <= uAry.length - 1; r++) {
     Logger.log(uAry[r]);
   }
+  ////////ユーザー別統計おわり
 
-  /*
-    //報告ファイルを作成(rawAry,uAry)
-    const date1_f = Utilities.formatDate(date1, "JST", "yyyy/MM/dd(E)HH:mm");
-    const date2_f = Utilities.formatDate(date2, "JST", "yyyy/MM/dd(E)HH:mm");
-    var newFileName = plusFileName + "_" + date1_f + "_から_" + date2_f + "_まで";
-  
-    var newSpS = copyAryToNewSpreadSheet(uAry, folderId, newFileName, "ユーザーごとの統計");
-    copyAryToSpreadSheet(newSpS, rawAry, "生データ");
-  
-    var editN = uAry[rowU][2];//編集数合計
-    var ptN = uAry[rowU][8];//ポイント合計
-  
-    return { editN, ptN, newSpS };//作ったスプシも返す
-    */
+
+  ////////日・シフト種別統計
+  var dhAry = [];//日・シフト種ごとのまとめ
+  dhAry[0] = ["日(0)", "シフト種類(1)", "編集数合計(2)", "発注編集数(3)", "週バ編集数(4)", "鮮度編集数(5)", "清掃編集数(6)", "新人編集数(7)", "ポイント合計(8)", "発注pt(9)", "週バpt(10)", "鮮度pt(11)", "清掃pt(12)", "新人pt(13)"];
+
+  for (let r = 1; r <= rawAry.length - 1; r++) {//１行目はスルー
+    let shiftD = rawAry[r][1];//シフト日
+    let shiftN = rawAry[r][2];//シフト時間帯
+    let sN = rawAry[r][6];//シート名
+    let pt = Number(rawAry[r][11]);//ポイント
+
+    for (let rr = 0; rr <= dhAry.length - 1;) {//探す
+
+      if (shiftD != dhAry[rr][0] || shiftN != dhAry[rr][1]) {//日もしくは時間帯が違ってたら次
+        if (rr == dhAry.length - 1) {//でも最後じゃんこれ
+          rr++;
+          dhAry[rr] = [shiftD, shiftN, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];//あらたな配列→下へ続く
+        } else {
+          rr++;
+          continue;
+        }
+      }
+
+      //日、時間帯が一致
+      dhAry[rr][2]++;//合計＋１
+      dhAry[rr][8] = dhAry[rr][8] + pt;//ポイント加算
+      if (sN == "発注") {
+        dhAry[rr][3]++;
+        dhAry[rr][9] = dhAry[rr][9] + pt;
+      } else if (sN.includes("週バ")) {
+        dhAry[rr][4]++;
+        dhAry[rr][10] = dhAry[rr][10] + pt;
+      } else if (sN == "鮮度") {
+        dhAry[rr][5]++;
+        dhAry[rr][11] = dhAry[rr][11] + pt;
+      } else if (sN == "清掃") {
+        dhAry[rr][6]++;
+        dhAry[rr][12] = dhAry[rr][12] + pt;
+      } else if (sN.includes("【新】")) {
+        dhAry[rr][7]++;
+        dhAry[rr][13] = dhAry[rr][13] + pt;
+      }
+
+      break;//見つかったので
+
+    }
+
+  }
+
+  //dhAryに全行合計を追加
+  dhAry = transpose(dhAry);//行列入れ替え
+  var rowU = dhAry[0].length;
+  dhAry[0][rowU] = "合計";
+  dhAry[1][rowU] = "#";
+  for (let r = 2; r <= dhAry.length - 1; r++) {
+    dhAry[r][rowU] = rowSum(dhAry[r]);
+  }
+  dhAry = transpose(dhAry);//行列入れ替え
+  //これでdhAryが完成
+
+  Logger.log("dhAry");
+  for (let r = 0; r <= dhAry.length - 1; r++) {
+    Logger.log(dhAry[r]);
+  }
+  ////////日・時間帯別統計おわり
+
+
+  ////////日別統計
+  var dAry = [];//日ごとのまとめ
+  dAry[0] = ["日(0)", "#(1)", "編集数合計(2)", "発注編集数(3)", "週バ編集数(4)", "鮮度編集数(5)", "清掃編集数(6)", "新人編集数(7)", "ポイント合計(8)", "発注pt(9)", "週バpt(10)", "鮮度pt(11)", "清掃pt(12)", "新人pt(13)"];
+
+  for (let r = 1; r <= rawAry.length - 1; r++) {//１行目はスルー
+    let shiftD = rawAry[r][1];//シフト日
+    let sN = rawAry[r][6];//シート名
+    let pt = Number(rawAry[r][11]);//ポイント
+
+    for (let rr = 0; rr <= dAry.length - 1;) {//探す
+
+      if (shiftD != dAry[rr][0]) {//日が違ってたら次
+        if (rr == dAry.length - 1) {//でも最後じゃんこれ
+          rr++;
+          dAry[rr] = [shiftD, "#", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];//あらたな配列→下へ続く
+        } else {
+          rr++;
+          continue;
+        }
+      }
+
+      //日が一致
+      dAry[rr][2]++;//合計＋１
+      dAry[rr][8] = dAry[rr][8] + pt;//ポイント加算
+      if (sN == "発注") {
+        dAry[rr][3]++;
+        dAry[rr][9] = dAry[rr][9] + pt;
+      } else if (sN.includes("週バ")) {
+        dAry[rr][4]++;
+        dAry[rr][10] = dAry[rr][10] + pt;
+      } else if (sN == "鮮度") {
+        dAry[rr][5]++;
+        dAry[rr][11] = dAry[rr][11] + pt;
+      } else if (sN == "清掃") {
+        dAry[rr][6]++;
+        dAry[rr][12] = dAry[rr][12] + pt;
+      } else if (sN.includes("【新】")) {
+        dAry[rr][7]++;
+        dAry[rr][13] = dAry[rr][13] + pt;
+      }
+
+      break;//見つかったので
+
+    }
+
+  }
+
+  //dAryに全行合計を追加
+  dAry = transpose(dAry);//行列入れ替え
+  var rowU = dAry[0].length;
+  dAry[0][rowU] = "合計";
+  dAry[1][rowU] = "#";
+  for (let r = 2; r <= dAry.length - 1; r++) {
+    dAry[r][rowU] = rowSum(dAry[r]);
+  }
+  dAry = transpose(dAry);//行列入れ替え
+  //これでdAryが完成
+
+  Logger.log("dAry");
+  for (let r = 0; r <= dAry.length - 1; r++) {
+    Logger.log(dAry[r]);
+  }
+  ////////日別統計おわり
+
+
+  ////////シフト種別統計
+  var hAry = [];//シフト種類ごとのまとめ
+  hAry[0] = ["#(0)", "シフト種類(1)", "編集数合計(2)", "発注編集数(3)", "週バ編集数(4)", "鮮度編集数(5)", "清掃編集数(6)", "新人編集数(7)", "ポイント合計(8)", "発注pt(9)", "週バpt(10)", "鮮度pt(11)", "清掃pt(12)", "新人pt(13)"];
+
+  for (let r = 1; r <= rawAry.length - 1; r++) {//１行目はスルー
+    let shiftN = rawAry[r][2];//時間帯名
+    let sN = rawAry[r][6];//シート名
+    let pt = Number(rawAry[r][11]);//ポイント
+
+    for (let rr = 0; rr <= hAry.length - 1;) {//探す
+
+      if (shiftN != hAry[rr][1]) {//日が違ってたら次
+        if (rr == hAry.length - 1) {//でも最後じゃんこれ
+          rr++;
+          hAry[rr] = ["#", shiftN, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];//あらたな配列→下へ続く
+        } else {
+          rr++;
+          continue;
+        }
+      }
+
+      //時間帯が一致
+      hAry[rr][2]++;//合計＋１
+      hAry[rr][8] = hAry[rr][8] + pt;//ポイント加算
+      if (sN == "発注") {
+        hAry[rr][3]++;
+        hAry[rr][9] = hAry[rr][9] + pt;
+      } else if (sN.includes("週バ")) {
+        hAry[rr][4]++;
+        hAry[rr][10] = hAry[rr][10] + pt;
+      } else if (sN == "鮮度") {
+        hAry[rr][5]++;
+        hAry[rr][11] = hAry[rr][11] + pt;
+      } else if (sN == "清掃") {
+        hAry[rr][6]++;
+        hAry[rr][12] = hAry[rr][12] + pt;
+      } else if (sN.includes("【新】")) {
+        hAry[rr][7]++;
+        hAry[rr][13] = hAry[rr][13] + pt;
+      }
+
+      break;//見つかったので
+
+    }
+
+  }
+
+  //hAryに全行合計を追加
+  hAry = transpose(hAry);//行列入れ替え
+  var rowU = hAry[0].length;
+  hAry[0][rowU] = "合計";
+  hAry[1][rowU] = "#";
+  for (let r = 2; r <= hAry.length - 1; r++) {
+    hAry[r][rowU] = rowSum(hAry[r]);
+  }
+  hAry = transpose(hAry);//行列入れ替え
+  //これでhAryが完成
+
+  Logger.log("hAry");
+  for (let r = 0; r <= hAry.length - 1; r++) {
+    Logger.log(hAry[r]);
+  }
+  ////////時間帯別統計おわり
+
+
+  //報告ファイルを作成(rawAry,uAry,dhAry,dAry,hAry)
+  const date1_f = Utilities.formatDate(date1, "JST", "yyyy/MM/dd(E)HH:mm");
+  const date2_f = Utilities.formatDate(date2, "JST", "yyyy/MM/dd(E)HH:mm");
+  var newFileName = plusFileName + "_" + date1_f + "_から_" + date2_f + "_まで";
+
+  var newSpS = copyAryToNewSpreadSheet(rawAry, folderId, newFileName, "生データ");
+  copyAryToSpreadSheet(newSpS, uAry, "実行者別統計");
+  copyAryToSpreadSheet(newSpS, dhAry, "日・シフト種類別統計");
+  copyAryToSpreadSheet(newSpS, dAry, "日別統計");
+  copyAryToSpreadSheet(newSpS, hAry, "シフト種類別統計");
+
+  var editN = hAry[rowU][2];//編集数合計
+  var ptN = hAry[rowU][8];//ポイント合計
+
+  return { editN, ptN, newSpS };//作ったスプシも返す
 
 
 }
