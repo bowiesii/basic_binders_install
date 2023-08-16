@@ -1,6 +1,16 @@
+//期間統計作成者へメール
+function mail_summary(email, filename, fileUrl) {
+  var subject = "【笠間店】期間統計を作成しました。";
+  var body = "期間統計出力フォルダ";
+  body = body + "\n" + "https://drive.google.com/drive/folders/19t8-VEtn-LQ4pIP2Tdet4Cd7mco815YE";
+  body = body + "\n" + filename;
+  body = body + "\n" + fileUrl
+  MailApp.sendEmail(email, subject, body);//本人にメール通知
+}
+
 //統計※管理者へは生存確認的目的でメール送る。
 //ユーザーは統計コマンドで確認してもらう。
-function mail_summary(body) {
+function mail_summaryDay(body) {
   var subject = "笠間店日報";
   MailApp.sendEmail("youseimale@gmail.com", subject, body);//【管理者】にメール通知のみ。
 }

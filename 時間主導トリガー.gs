@@ -62,7 +62,7 @@ function dailyMorning() {
   body = body + "\n清掃ログ数：" + cleanS;
   body = body + "\n" + "統合ログ（日１朝更新）" + "https://docs.google.com/spreadsheets/d/17bZ83U_NeHXLT__NOV0zfHd2B8XZIBEgKfd_akNZDuY/edit#gid=392913159";
 
-  mail_summary(body);//【管理者】へメール
+  mail_summaryDay(body);//【管理者】へメール
   sheetLog.getRange(1, 1).setNote(body);//「統計」コマンド返信用に内容をとっておく
 
 }

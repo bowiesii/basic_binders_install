@@ -1,7 +1,38 @@
+//対象フォームへトリガー設定（１回走ればよし。）
+//function setTrigger() {
+//var file = FormApp.openById("1PcKmi_c2LQbtbpi1WELpmCgT-GyCOwm7L2c0KP6bG9c");//作成フォーム：済
+//var functionName = "newSummaly"; //トリガーを設定したい関数名
+//ScriptApp.newTrigger(functionName).forForm(file).onFormSubmit().create();//onSubmitにする
+//}
+
+//フォームからトリガー
+function newSummaly(e) {
+
+  var email = e.response.getRespondentEmail();
+  var answer = e.response.getItemResponses();
+  var plusFileName = answer[0].getResponse();//追加文字列
+  var startD = answer[1].getResponse();//開始日付
+  var endD = answer[2].getResponse();//終了日付
+
+  var folderId = "19t8-VEtn-LQ4pIP2Tdet4Cd7mco815YE";//出力フォルダは固定
+  var date1 = new Date(startD);
+  var date2 = new Date(endD);
+  date2.setDate(date2.getDate() + 1);//24:00なので日付的には次の日の00:00になる
+
+  var { editN, ptN, newSpS } = makeSummalyInPeriod(date1, date2, folderId, plusFileName);
+
+  var filename = newSpS.getName();
+  var fileUrl = bbsLib.toUrl(newSpS.getId(), "0");
+
+  mail_summary(email, filename, fileUrl);//本人へメール
+
+}
+
+
 //特定の期間の統計を作成（date1からdate2まで）date1date2はDateフォーマットで。
 //統合ログの実行者別回数をまとめる。
 //フォルダに出力する。
-function makeSummalyInPeriod(date1, date2, folderId) {
+function makeSummalyInPeriod(date1, date2, folderId, plusFileName) {
 
   //行数を調べる
   var row_1 = dateToRow(date1);
@@ -34,19 +65,48 @@ function makeSummalyInPeriod(date1, date2, folderId) {
       user = "#不明";
     }
 
-    //店機器のとき、userから探す
-    if (userN == 3) {
+    if (userN == 3) {//店機器のとき、userから探す
 
+      for (let rr = 1; rr <= uAry.length - 1;) {//１行目はスルーして探す
 
+        if (user != uAry[rr][0]) {//実行者名違ってたらスルーして次
+          if (rr == uAry.length - 1) {//でも最後じゃんこれ
+            uAry[rr] = [[user], userN, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];//あらたな配列→下へ続く
+            rr++;
+          } else {
+            rr++;
+            continue;
+          }
+        }
 
+        //氏名が一致
+        uAry[rr][2]++;//合計＋１
+        uAry[rr][8] = uAry[rr][8] + pt;//ポイント加算
+        if (sN == "発注") {
+          uAry[rr][3]++;
+          uAry[rr][9] = uAry[rr][9] + pt;
+        } else if (sN.includes("週バ")) {
+          uAry[rr][4]++;
+          uAry[rr][10] = uAry[rr][10] + pt;
+        } else if (sN == "鮮度") {
+          uAry[rr][5]++;
+          uAry[rr][11] = uAry[rr][11] + pt;
+        } else if (sN == "清掃") {
+          uAry[rr][6]++;
+          uAry[rr][12] = uAry[rr][12] + pt;
+        } else if (sN.includes("【新】")) {
+          uAry[rr][7]++;
+          uAry[rr][13] = uAry[rr][13] + pt;
+        }
 
+        break;//見つかったので
 
-
-
+      }
 
     } else {//店機器でないとき、userNから探す
 
       for (let rr = 1; rr <= uAry.length - 1;) {//１行目はスルーして探す
+
         if (userN != uAry[rr][1]) {//実行者番号違ったらスルーして次
           if (rr == uAry.length - 1) {//でも最後じゃんこれ
             uAry[rr] = [[user], userN, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];//あらたな配列→下へ続く
@@ -78,18 +138,29 @@ function makeSummalyInPeriod(date1, date2, folderId) {
         }
 
         //uAry[rr][0]（[user]配列）にuserが無ければ追加する
+        for (let rrr = 0; rrr <= uAry[rr][0].length - 1; rrr++) {
+          if (uAry[rr][0][rrr] == user) {
+            break;
+          } else if (rrr == uAry[rr][0].length - 1) {//最後じゃんこれ→配列に追加
+            uAry[rr][0], push(user);
+          }
+        }
 
-
-
-
-
-
-
-        break;
+        break;//見つかったので
 
       }
 
+    }//店機器でないとき
+
+  }
+
+  //uAry[rr][0]を文字列に直す
+  for (let rr = 1; rr <= uAry.length - 1; rr++) {
+    var st = "";
+    for (let rrr = 0; rrr <= uAry[rr][0].length - 1; rrr++) {
+      st = st + "#" + uAry[rr][0][rrr];
     }
+    uAry[rr][0] = st;
   }
 
   //uAryに全行合計を追加
@@ -101,12 +172,16 @@ function makeSummalyInPeriod(date1, date2, folderId) {
     uAry[r][rowU] = rowSum(uAry[r]);
   }
   uAry = transpose(uAry);//行列入れ替え
-
   //これでuAryが完成
-  //週報ファイルを作成(rawAry,uAry)
+
+  for (let r = 0; r <= uAry.length - 1; r++) {
+    Logger.log(uAry[r]);
+  }
+
+  //報告ファイルを作成(rawAry,uAry)
   const date1_f = Utilities.formatDate(date1, "JST", "yyyy/MM/dd(E)HH:mm");
   const date2_f = Utilities.formatDate(date2, "JST", "yyyy/MM/dd(E)HH:mm");
-  var newFileName = "期間統計_" + date1_f + "_から_" + date2_f + "_まで";
+  var newFileName = plusFileName + "_" + date1_f + "_から_" + date2_f + "_まで";
 
   var newSpS = copyAryToNewSpreadSheet(uAry, folderId, newFileName, "ユーザーごとの統計");
   copyAryToSpreadSheet(newSpS, rawAry, "生データ");
