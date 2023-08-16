@@ -37,7 +37,7 @@ const shareSpreadSheet = SpreadsheetApp.openById("1TZ8pjp3Tc6M0BvoshszIGudfAIL4I
 const shareSheet = shareSpreadSheet.getSheetByName("登録している人");
 
 //本日日付定義
-//const today = new Date("2023/8/6");
+//const today = new Date("2023/8/13");
 //やっぱり本当の日付
 const today = new Date();
 const todayYear = today.getFullYear();
