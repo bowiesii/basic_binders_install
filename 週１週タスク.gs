@@ -11,7 +11,7 @@ function wtaskLogWeekly() {
   const sheet2 = bbsLib.getSheetByIdGid(id_bb, gid_wtask2);
   const sheet3 = bbsLib.getSheetByIdGid(id_bb, gid_wtask3);
 
-  //日付をB3から取り出し（ファイル名は変更できるため保護セルから）
+  //日付をB3から取り出し
   var sheet1_n = sheet1.getRange(3, 2).getDisplayValue();
   var sheet2_n = sheet2.getRange(3, 2).getDisplayValue();
   var sheet3_n = sheet3.getRange(3, 2).getDisplayValue();
@@ -75,30 +75,6 @@ function wtaskLogWeekly() {
 
   Logger.log("ログ記録段階");
 
-  /*
-  //基本バインダー_ログ内シートにバックアップする場合。
-  const sheetLog = bbsLib.getSheetByIdGid(id_bbLog, gid_wtaskWeek);
-  //ログシートに[0]をログ記録する
-  var logary = [today_ymddhm];//[0]は本日日付
-  logary[1] = ary[0][1].getRange(2, 2).getValue();//バインダー
-  logary[2] = ary[0][1].getRange(3, 2).getValue();//作業
-  logary[3] = ary[0][1].getRange(4, 2).getValue();//納品
-  var taskn = ary[0][1].getLastRow() - 6;//タスクの数
-  var tasks = ary[0][1].getRange(7, 1, taskn, 3).getDisplayValues();//タスクの名称
-  var taskslog = ary[0][1].getRange(7, 4, taskn, 1).getNotes();//ログ（隠し列）
-  for (var row = 0; row <= tasks.length - 1; row++) {
-    logary[row + 4] = tasks[row][0] + "\n" + tasks[row][1] + "\n" + taskslog[row][0] + "\n" + tasks[row][2];//改行で区切り
-  }
-
-  //ログシート２行目に挿入
-  sheetLog.insertRowBefore(2);
-  Logger.log(logary);
-  sheetLog.getRange(2, 1, 1, logary.length).setValues([logary]);//二次元配列にして書き込み
-  if (sheetLog.getLastRow() >= 10001) {  //10001行以上なら10001行目を削除
-    sheetLog.deleteRow(10001);
-  }
-  */
-
   //週タスク(古)にシートコピー（削除はしない）※基本バインダー_ログではなく個別シートで保管する場合。
   var newfilename = ary[0][1].getRange(3, 2).getDisplayValue() + "週作業";
   copyToNewSpreadsheet(ary[0][1], "1NEsWHJLqXgrWANW82Tybox04B85WYYp9", newfilename);//移動
@@ -108,10 +84,9 @@ function wtaskLogWeekly() {
   ary[0][1].getRange(3, 2).setValue(ary[0][2]);//作業週（３，２）セル変更
   ary[0][1].getRange(4, 2).setValue(ary[0][4]);//納品週（４，２）セル変更
   ary[0][1].setName(ary[0][5]);//シート名変更
-  ary[0][1].getRange(2, 4).setValue("新");//順序バックアップ
 
   //[0]シート→デフォルト状態
-  for (let r = 7; r <= ary[0][1].getLastRow(); r++) {//７行以降
+  for (let r = 6; r <= ary[0][1].getLastRow(); r++) {//６行以降
     if (ary[0][1].getRange(r, 1).getDisplayValue() == "") {//タスクが空白なら不要
       ary[0][1].getRange(r, 2).setValue("不要");
     } else {//空白でなければ未
@@ -127,12 +102,10 @@ function wtaskLogWeekly() {
   ary[1][1].getRange(3, 2).setValue(ary[1][2]);//作業週
   ary[1][1].getRange(4, 2).setValue(ary[1][4]);//納品週
   ary[1][1].setName(ary[1][5]);//シート名
-  ary[1][1].getRange(2, 4).setValue("古");//順序バックアップ
 
   ary[2][1].getRange(3, 2).setValue(ary[2][2]);//作業週
   ary[2][1].getRange(4, 2).setValue(ary[2][4]);//納品週
   ary[2][1].setName(ary[2][5]);//シート名
-  ary[2][1].getRange(2, 4).setValue("中");//順序バックアップ
 
 
 }

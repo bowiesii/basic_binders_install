@@ -33,7 +33,7 @@ function delSinjin(e) {
       var gid = sheetS[na].getSheetId();
 
       Logger.log(sheetS[na].getSheetName() + " 移動と削除とログ記録");
-      var newfilename = sheetS[na].getSheetName() + "（" + sheetS[na].getRange(3, 4).getDisplayValue() + "最終更新、手動削除）";
+      var newfilename = sheetS[na].getSheetName() + "（" + sheetS[na].getRange(3, 4).getNote() + "最終更新、手動削除）";
       copyToNewSpreadsheet(sheetS[na], "12QZoEbx8TU6LpHUnZEaykx4Y__MWEOMG", newfilename);//移動
       bbSpreadSheet.deleteSheet(sheetS[na]);//シート削除
 

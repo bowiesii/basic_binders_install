@@ -41,14 +41,14 @@ function newSinjin(e) {
   for (let na = 0; na <= sheetS.length - 1; na++) {
     if (sheetS[na].getSheetName().includes("【新】")) {
 
-      var date_s = new Date(sheetS[na].getRange(3, 4).getDisplayValue());//特定セルに最終更新が記録すみ
+      var date_s = new Date(sheetS[na].getRange(3, 4).getNote());//特定セルに最終更新が記録すみ
       var date_t = new Date(today_ymd);
       var dd = (date_t - date_s) / 86400000;//経過日数（ミリ秒を日に変換）
       if (dd >= 30) {//最終更新から30日以上経過→削除と移動・ログ記録
         var gid = sheetS[na].getSheetId();
 
         Logger.log(sheetS[na].getSheetName() + " 移動と削除とログ記録");
-        var newfilename = sheetS[na].getSheetName() + "（" + sheetS[na].getRange(3, 4).getDisplayValue() + "最終更新、自動削除）";
+        var newfilename = sheetS[na].getSheetName() + "（" + sheetS[na].getRange(3, 4).getNote() + "最終更新、自動削除）";
         copyToNewSpreadsheet(sheetS[na], "12QZoEbx8TU6LpHUnZEaykx4Y__MWEOMG", newfilename);//移動
         bbSpreadSheet.deleteSheet(sheetS[na]);//シート削除
 
@@ -74,8 +74,8 @@ function newSinjin(e) {
   newSheet.setName(newSheetName);//シート名など設定
   newSheet.getRange(2, 2).setValue(sinjinN);//新人氏名
   newSheet.getRange(3, 2).setValue(today_ymd);//作成日
-  newSheet.getRange(3, 4).setValue(today_ymd);//最終更新
-  newSheet.getRange(4, 4).setValue(newSheet.getSheetId());//GID
+  newSheet.getRange(1, 4).setNote(newSheet.getSheetId());//GID
+  newSheet.getRange(3, 4).setNote(today_ymd);//最終更新
 
   //保護設定を原本からコピー
   copySheetProtection(sheetOri, newSheet);
