@@ -14,6 +14,7 @@ function delSinjin(e) {
   //「鮮度」とか打ち込まれると困るので【新】のないシート名ははじく。
   if (delSheetName.includes("【新】") == false) {
     Logger.log("invalid sheetname");
+    MailApp.sendEmail(email, "笠間店より", "シート名指定エラー");
     return;
   }
 

@@ -16,6 +16,7 @@ function newSinjin(e) {
 
   if (sinjinN.length <= 1 || sinjinN.length >= 9) {
     Logger.log("氏名文字数エラー");
+    MailApp.sendEmail(email, "笠間店より", "氏名文字数エラー");
     return;
   }
 
