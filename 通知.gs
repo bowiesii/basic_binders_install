@@ -1,3 +1,57 @@
+//プッシュリスト全員にメール通知
+function pushToMailList(sub, body) {
+
+  var sheetPushList = bbsLib.getSheetByIdGid(id_bbLog, gid_pushList);//プッシュ登録者リスト
+  var listNum = sheetPushList.getLastRow() - 1;//人数
+
+  if (listNum >= 1) {
+    var emailAry = sheetPushList.getRange(2, 2, listNum, 1).getDisplayValues();//二次元
+    for (let r = 0; r <= emailAry.length - 1; r++) {
+      var email = emailAry[r][0];
+      MailApp.sendEmail(email, sub, body);//プッシュメール通知
+    }
+  }
+
+}
+
+//1=プッシュ通知登録
+//2=すでに登録済み
+//3=登録解除
+//4=もともと登録解除済み
+function mail_push_substop(opt, email) {
+
+  var sub = "";
+  var body = "";
+
+  if (opt == 1) {
+    sub = "【笠間店】プッシュ通知登録を行いました。";
+    body = "以後、このメールアドレスへプッシュ通知配信を行います。\n";
+    body = body + `通知タイミング：
+〇発注未報告のとき（毎朝４～５時チェック）
+〇ファイル共有登録・解除・氏名変更時
+〇新人教育表作成・手動削除時`;
+    body = body + "\nプッシュ通知停止はこちら\n" + "https://docs.google.com/forms/d/e/1FAIpQLSeOOfCqlYouW8n1IakzqehkwvBTmpGmQ-fHish55kE_yR9mmg/viewform";
+
+  } else if (opt == 2) {
+    sub = "【笠間店】プッシュ通知登録済みです。"
+    body = "既にプッシュ通知登録済みです。";
+
+  } else if (opt == 3) {
+    sub = "【笠間店】プッシュ通知を停止します。"
+    body = "プッシュ通知配信を停止します。";
+
+  } else if (opt == 4) {
+    sub = "【笠間店】既にプッシュ通知配信は停止されています。"
+    body = "もともとプッシュ通知登録されていません。";
+
+  } else {
+    Logger.log("opt指定エラー");
+  }
+
+  MailApp.sendEmail(email, sub, body);//本人にメール通知
+
+}
+
 //期間統計作成者へメール
 function mail_makeSummary(opt, email, filename, fileUrl) {
   if (opt == 0) {
@@ -24,32 +78,33 @@ function mail_makeSummary(opt, email, filename, fileUrl) {
 //統計※管理者へは生存確認的目的でメール送る。
 //ユーザーは統計コマンドで確認してもらう。
 function mail_summaryDay(body) {
-  var subject = "（管理者向け）笠間店日報";
+  var subject = "（笠間店管理者向け）日報";
   MailApp.sendEmail("youseimale@gmail.com", subject, body);//【管理者】にメール通知のみ。
 }
 
 //週報→youseimale
 function mail_summalyMonday(body) {
-  var subject = "（管理者向け）笠間店週報";
+  var subject = "（笠間店管理者向け）週報";
   MailApp.sendEmail("youseimale@gmail.com", subject, body);//【管理者】にメール通知のみ。
 }
 
-//発注警告★bot
+//発注警告★プッシュ配信
 function mail_order() {
-  const subject = '笠間店発注未報告通知'; //件名
+  const subject = '（笠間店プッシュ通知）発注未報告'; //件名
   let body = `本日朝締めの発注の一部または全部が現在未報告です。
 確認して下さい。
 https://docs.google.com/spreadsheets/d/1sEKCFs6oNzbEkRgt2Z2aq_4mOGQXMU7dcFTXPNYf-wg/edit#gid=648587868
 `;
+  body = body + "\nプッシュ通知停止はこちら\n" + "https://docs.google.com/forms/d/e/1FAIpQLSeOOfCqlYouW8n1IakzqehkwvBTmpGmQ-fHish55kE_yR9mmg/viewform";
 
-  botLib.pushSB(subject, body);//bot通知
+  pushToMailList(subject, body);//プッシュ通知
 }
 
 //opt1=シート名重複
 //opt2=共有登録なし
-//opt3=新人作成したとき→★bot
+//opt3=新人作成したとき→★プッシュ配信
 //opt4=シート名なし
-//opt5=新人削除したとき→★bot
+//opt5=新人削除したとき→★プッシュ配信
 //opt6=新人作成したとき
 //opt7=新人削除したとき
 function mail_sinjin(address, sinjinN, opt) {
@@ -78,7 +133,7 @@ https://docs.google.com/forms/d/e/1FAIpQLSc0yBXDQc6dxrZxiMApc5tT0KgOCCHvvKeQuMmo
 
   } else if (opt == 2) {//共有未登録のとき
     subject = 'ファイルの共有登録を行って下さい。'; //件名
-    body = `フォームよりファイル・シートを作成or削除する前に、お使いのGoogleアカウントでの笠間店ファイルの共有登録が必要です。
+    body = `お使いのGoogleアカウントでの笠間店ファイルの共有登録が必要です。
 
 共有登録は以下から。
 https://docs.google.com/forms/d/e/1FAIpQLSexh7ngMQJqgerMn4OK3QFNwTFKLCMilmEWj4dmp1MS7vwi5Q/viewform
@@ -87,10 +142,11 @@ https://docs.google.com/forms/d/e/1FAIpQLSexh7ngMQJqgerMn4OK3QFNwTFKLCMilmEWj4dm
 ※このメールは自動配信です。
 `;
 
-  } else if (opt == 3) {//新人作成したとき→★bot
-    subject = "笠間店新人表作成通知"; //件名
+  } else if (opt == 3) {//新人作成したとき→★プッシュ配信
+    subject = "（笠間店プッシュ通知）新人表作成"; //件名
     body = "新人表（" + sinjinN + "さん用）が作成されました。";
-    address = "bot";
+    body = body + "\nプッシュ通知停止はこちら\n" + "https://docs.google.com/forms/d/e/1FAIpQLSeOOfCqlYouW8n1IakzqehkwvBTmpGmQ-fHish55kE_yR9mmg/viewform";
+    address = "push";
 
   } else if (opt == 4) {//新人削除しようとしたがシート名が見つからない
     subject = '【笠間店】入力された名称のシートは無いようです。'; //件名
@@ -105,10 +161,11 @@ https://docs.google.com/forms/d/e/1FAIpQLSe04FTp2UNkWXTZdRXgjNb-BPGxMm6l35SfvYyi
 ※このメールは自動配信です。
 `;
 
-  } else if (opt == 5) {//新人削除したとき→★bot
-    subject = "笠間店新人表手動削除通知"; //件名
+  } else if (opt == 5) {//新人削除したとき→★プッシュ配信
+    subject = "（笠間店プッシュ通知）新人表手動削除"; //件名
     body = "新人表（" + sinjinN + "）が手動削除されました。";
-    address = "bot";
+    body = body + "\nプッシュ通知停止はこちら\n" + "https://docs.google.com/forms/d/e/1FAIpQLSeOOfCqlYouW8n1IakzqehkwvBTmpGmQ-fHish55kE_yR9mmg/viewform";
+    address = "push";
 
   } else if (opt == 6) {//新人作成
     subject = '【笠間店】新人教育シートを作成しました。'; //件名
@@ -135,9 +192,9 @@ https://drive.google.com/drive/folders/12QZoEbx8TU6LpHUnZEaykx4Y__MWEOMG
     return;
   }
 
-  //メールor通知
-  if (address == "bot") {
-    botLib.pushSB(subject, body);
+  //メールorプッシュ通知
+  if (address == "push") {
+    pushToMailList(subject, body);
   } else {
     MailApp.sendEmail(address, subject, body);
   }

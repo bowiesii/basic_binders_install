@@ -21,7 +21,6 @@ const gid_sinjinOri = "865253827";
 //基本バインダーログ
 const id_bbLog = "17bZ83U_NeHXLT__NOV0zfHd2B8XZIBEgKfd_akNZDuY";
 const gid_simei = "1508872407";//氏名日ごと
-//const gid_wtaskWeek = "0";//週タスク週ごと※個別ファイルに移動することにした。
 const gid_fcheckDaySum = "1585149555";//鮮度日ごと統計
 const gid_cleanDaySum = "149621787";//清掃日ごと統計
 const gid_orderDay = "838294828";//発注日ごと
@@ -31,6 +30,7 @@ const gid_botTemp = "947575838";//bot一時★これだけ一時ログもログ�
 const gid_botDay = "1119293774";//bot
 const gid_intLog = "392913159";//統合ログ（管理者以外）
 const gid_makeLogWeek = "1190023817";//週報作成ログ
+const gid_pushList = "1503321267";//プッシュ登録者リスト
 
 //ファイル共有リスト
 const shareSpreadSheet = SpreadsheetApp.openById("1TZ8pjp3Tc6M0BvoshszIGudfAIL4IBdmp4OUSMZGSHg");
